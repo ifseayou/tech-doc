@@ -75,7 +75,39 @@ git clone git@github.com:ifseayou/tech-doc.git
 # 如此一来，当前clone下来的项目会自己成为一个本地的仓库并且和远端关联。
 ~~~
 
+### 建仓姿势
 
+#### method one
+
+平时建笔记的时候，只需要一个分支即可，搞那么多分支根本没有必要。我认为比较好的创建方式为：
+
+① 先在`github`上建好项目，该项目名要想好
+
+② 在本地的任意一个目录，clone `github`的项目，clone下来的项目自带`.git`文件。
+
+如：
+
+~~~shell
+# 先在github建立infra-doc
+
+# 在markdowns文件夹下clone
+~~~
+
+![](img/md/1.png)
+
+#### method two
+
+如果本地已经有了项目`tech-doc`，想要备份一下，需要在`github`建立好项目名`tech-doc`
+
+~~~shell
+# 在tech-doc下执行
+git init 
+git remote add origin url
+
+# 然后就可以提交代码了
+~~~
+
+![](img/md/2.png)
 
 ### 分支
 
@@ -125,8 +157,6 @@ git push
 ### dev和master的协同操作
 
 就我个人的习惯来说，我会一直在dev上进行提交，在提交之后，回到master分支，然后在master分支合并dev分支，然后在master分支上提交到远程。
-
-
 
 ## Linux
 
