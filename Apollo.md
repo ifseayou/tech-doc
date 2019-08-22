@@ -26,6 +26,14 @@ Apollo目前唯一的外部依赖是MySQL
   - 虽然这类框架类组件是由其他团队开发、维护，但是运行时是在业务实际应用内的，所以本质上可以认为框架类组件也是应用的一部分。
   - 这类组件对应的配置也需要有比较完善的管理方式。
 
+
+
+### 问题：
+
+什么是是 system properties？
+
+
+
 ## 原理
 
 #### 服务端
@@ -93,4 +101,179 @@ Apollo的配置：
 测试通过：
 
 ![](img/apo/5.png)
+
+
+
+## Apollo和boot
+
+### `spring boot`读取Apollo配置的案例1：
+
+Apollo上面的配置信息：
+
+ ![](img/apo/6.png)
+
+项目的结构：
+
+![](img/apo/7.png)
+
+代码：
+
+~~~java
+// Student类 ，这里一定要添加get方法，set设值，get取值
+@Component
+@EnableApolloConfig
+@ConfigurationProperties(prefix = "stu")
+public class Student {
+    private String name;
+    private String sex;
+    private int age;
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getName() {
+        return name;
+    }
+    public String getSex() {
+        return sex;
+    }
+    public int getAge() {
+        return age;
+    }
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+
+// Controller
+@RestController
+public class HelloController {
+
+    @Autowired
+    private Student student;
+
+    @GetMapping(path = "show")
+    public String show() {
+        return JSON.toJSONString(student);
+    }
+}
+
+// 启动类
+@SpringBootApplication
+public class ApolloClientApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ApolloClientApplication.class, args);
+    }
+}
+~~~
+
+配置信息：
+
+~~~properties
+#app.properties
+app.id=iot-ifseayou
+
+# apollo-env.properties
+local.meta=http://192.168.1.212:8282
+dev.meta=http://192.168.1.212:8282
+
+# bootstrap.properties
+apollo.bootstrap.enabled = true
+apollo.bootstrap.namespaces = application
+~~~
+
+最终访问的结果：
+
+![](img/apo/8.png)
+
+### spring boot读取Apollo配置的案例2：
+
+Apollo的配置信息：
+
+![](img/apo/9.png)
+
+项目结构：
+
+![](img/apo/7.png)
+
+代码：
+
+```java
+// Student类 ，这里一定要添加get方法，set设值，get取值
+@Component
+@EnableApolloConfig
+public class Student {
+    @Value("${stu.name}")
+    private String name;
+    @Value("${stu.sex}")
+    private String sex;
+    @Value("${stu.age}")
+    private int age;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getName() {
+        return name;
+    }
+    public String getSex() {
+        return sex;
+    }
+    public int getAge() {
+        return age;
+    }
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+
+// Controller
+@RestController
+public class HelloController {
+
+    @Autowired
+    private Student student;
+
+    @GetMapping(path = "show")
+    public String show() {
+        return JSON.toJSONString(student);
+    }
+}
+
+// 启动类
+@SpringBootApplication
+public class ApolloClientApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ApolloClientApplication.class, args);
+    }
+}
+```
+
+配置信息：
+
+```properties
+#app.properties
+app.id=iot-ifseayou
+
+# apollo-env.properties
+local.meta=http://192.168.1.212:8282
+dev.meta=http://192.168.1.212:8282
+
+# bootstrap.properties
+apollo.bootstrap.enabled = true
+apollo.bootstrap.namespaces = application
+```
+
+最终访问的结果：
+
+![](img/apo/10.png)
+
+
+
+
 

@@ -1,3 +1,5 @@
+# Java规范
+
 # Java
 
 本文更多的简述Java8的相关知识，因为Java 8 于2014年3月14号发布以来，可以看成是自Java 5 以来最具革命性的版本。Java 8为Java语言、编译器、类库、开发工具与JVM带来了大量新特性。
@@ -285,6 +287,43 @@ class MyCallable03 implements Callable<Integer>{
 
 
 ## 类库
+
+### Regex
+
+~~~java
+package com.isea.springboot;
+import java.util.regex.Pattern;
+/**
+ * @author isea_you
+ * @date 2019/8/21
+ * @time 21:06
+ * @target:
+ */
+public class HelloRegex {
+    public static void main(String[] args) {
+                // \s 表示的是匹配1个以上的空格，matches()接收两个参数
+        System.out.println(Pattern.matches("this\\s+is\\s+text", "this is text")); // true
+        System.out.println(Pattern.matches("this\\s+is\\s+text", "this     is     text"));  // true
+        System.out.println(Pattern.matches("this\\s+is\\s+text", "thisistext")); // false
+
+        // \d匹配一个或者多个数字，^以某某开头，该表达式的意思是以任意的数字开头，？设置括号的选项是可选的\.匹配"."
+        System.out.println(Pattern.matches("^\\d+(\\.\\d+)?", "2.21")); // true
+        System.out.println(Pattern.matches("^\\d+(\\.\\d+)?", "5")); // true
+
+        // 匹配 + ，- ，* ， /
+        System.out.println(Pattern.matches("\\+|-|\\*|/", "-")); // true
+        System.out.println(Pattern.matches("\\+|-|\\*|/", "+")); // true
+        System.out.println(Pattern.matches("\\+|-|\\*|/", "*")); // true
+        System.out.println(Pattern.matches("\\+|-|\\*|/", "/")); // true
+        System.out.println(Pattern.matches("\\+|-|\\*|/", "/")); // true
+    }
+}
+
+~~~
+
+
+
+
 
 ### Properties
 
