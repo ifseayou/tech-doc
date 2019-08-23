@@ -11,9 +11,51 @@
 打包的方式会影响到静态自愿的绑定。
 ~~~
 
+## Maven中的标签
 
+# profile
 
+用maven管理项目有一个好处是就是可以针对不同的环境使用不同的编译打包设置，方便了多环境下的打包部署，一般我们开发项目都会有至少**开发环境和正式环境**两个，针对这两个环境的配置信息也会有所不同，比如数据库的配置等。我们可以使用maven的profile定义来进行区分，比如我们在项目的pom文件中定义如下片段：
 
+~~~xml
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>cc.mzone</groupId>
+    <artifactId>myjar</artifactId>
+    <version>0.1</version>
+    <packaging>jar</packaging>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*.*</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+    <properties>
+        <jdbc.url>jdbc:mysql://localhost:3306/abc</jdbc.url>
+        <jdbc.username>root</jdbc.username>
+        <jdbc.password>root</jdbc.password>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>product</id>
+            <properties>
+                <jdbc.url>jdbc:mysql://localhost:3306/abc123</jdbc.url>
+                <jdbc.username>rootuser</jdbc.username>
+                <jdbc.password>rootpwd</jdbc.password>
+            </properties>
+        </profile>
+    </profiles>
+</project>
+~~~
+
+这里我们在pom文件中定义了数据库的相关配置，同时定义了一个profile，其id为product，同时在这个profile中也定义了数据库的相关配置。这样我们使用**mvn package**命令时就可以使用默认的jdbc设置，当我们使用**mvn package -P product**时maven就会自动使用id为product的profile中的数据库配置，这个是maven读取属性配置文件的覆盖。
 
 
 

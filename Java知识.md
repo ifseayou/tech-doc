@@ -190,7 +190,32 @@ public <E> method(){
 }
 ~~~
 
-## Java.util.concurrent.
+## java.sql.
+
+### Connection
+
+都听过JDBC，这个JDBC中的C就是Connection，这个Connection是一个接口，是Sun公司定义的规范，标准化了Java连接MySQL的方式
+
+~~~java
+/**
+ * <P>A connection (session) with a specific
+ * database. SQL statements are executed and results are returned
+ * within the context of a connection.
+ */
+public interface Connection  extends Wrapper, AutoCloseable {
+~~~
+
+### Statement
+
+~~~java
+/**
+ * The object used for executing a static SQL statement
+ * and returning the results it produces.
+ */
+public interface Statement extends Wrapper, AutoCloseable {
+~~~
+
+## java.util.concurrent.
 
 Java中创建线程的三个方式：
 

@@ -16,9 +16,7 @@
 ssh-keygen -t rsa -C "ifseayou@gmail.com"
 ~~~
 
-一路回车，然后在进入```./ssh```  中复制公钥。添加到GitHub中（打开“Account settings”，“SSH Keys”页面）GitHub支持添加多个SSHkey，这表示你可以从多个终端向GitHub服务器提交代码。
-
-
+一路回车，然后在进入```./ssh```  中复制公钥。添加到GitHub中（打开“Account settings”，“SSH Keys”页面）GitHub支持添加多个`SSHkey`，这表示你可以从多个终端向GitHub服务器提交代码。
 
 ### 提交
 
@@ -108,6 +106,14 @@ git remote add origin url
 ~~~
 
 ![](img/md/2.png)
+
+### `gitignore`文件
+
+有些时候，你必须把某些文件放到`Git`工作目录中，但又不能提交它们忽略文件的原则是：
+
+* 忽略操作系统自动生成的文件，比如缩略图等；
+* 忽略编译生成的中间文件、可执行文件等，也就是如果一个文件是通过另一个文件自动生成的，那自动生成的文件就没必要放进版本库，比如Java编译产生的`.class`文件；
+* 忽略你自己的带有敏感信息的配置文件，比如存放口令的配置文件。
 
 ### 分支
 

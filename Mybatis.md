@@ -16,7 +16,7 @@
 
 **``Mybatis``的原理如下：**
 
-![1563276973373](C:\Users\isea_you\AppData\Roaming\Typora\typora-user-images\1563276973373.png)
+
 
 ## 入门例子
 

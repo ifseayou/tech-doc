@@ -69,13 +69,29 @@
 
  浏览器发送hello请求，服务器接收请求并处理，响应Hello boot 字符串。这是一个典型的web应用，如果不使用boot去实现的话，首先我们会创建一个web项目，导入spring，springmvc 相关的依赖，然后编写一堆配置文件，完成之后将整个项目打成war包，然后放入到Tomcat里运行。
 
-
-
 如果使拥Boot来解决这份事情的话：
 
 1） 创建一个Maven工程
 
 2） 导入boot相关的依赖，在boot的官网的quickstart中copy即可
+
+~~~xml
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.1.7.RELEASE</version>
+    <relativePath/> <!-- lookup parent from repository -->
+</parent>
+
+<!--她的父项目是：-->
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-dependencies</artifactId>
+    <version>2.1.7.RELEASE</version>
+    <relativePath>../../spring-boot-dependencies</relativePath>
+  </parent>
+<!--有她来真正的管理Spring boot应用的所有依赖-->
+~~~
 
 3） 编写一个主程序，来编写spring boot的应用
 
@@ -120,7 +136,7 @@ static：放置静态资源，js，css，html，images等
 
 template: 保存所有的模板页面。
 
- 
+
 
  ## Spring 中的一些注解
 
@@ -147,7 +163,7 @@ template: 保存所有的模板页面。
 public @interface SpringBootApplication {
 ~~~
 
-*  ***@SpringBootConfiguration***  标注在某一个类上，表名这是 一个Spring Boot的配置类，该配置类里面有 ***@Configuration*** 注解，在配置类上标记该注解，表示这相当于是一个配置文件，***@Configuration***注解下还有一个注解 ***@Component*** ，表明配置类也是容器中的一个组件。
+* ***@SpringBootConfiguration***  标注在某一个类上，表名这是 一个Spring Boot的配置类，该配置类里面有 ***@Configuration*** 注解，在配置类上标记该注解，表示这相当于是一个配置文件，***@Configuration***注解下还有一个注解 ***@Component*** ，表明配置类也是容器中的一个组件。
 
 * ***EnableAutoConfiguration*** 告诉Spring Boot开启自动配置功能，在***@EnableAutoConfiguration*** 注解下还有
 
@@ -156,10 +172,10 @@ public @interface SpringBootApplication {
   
   //将主配置类（@SpringBootApplication标注的类）的所在包及下面所有子包里面的所有组件扫描到Spring容器；
    
-  @Import({AutoConfigurationImportSelector.class}) // 导入自动配置导入选择器，有了这个选择器之后，可以导入该场景下的所需要的所有组件，并完成配置。
+  @Import({AutoConfigurationImportSelector.class}) // 导入自动配置导入选择器，有了这个选择器之后，可以导入该场景下的所需要的所有组件，并完成配置。将所有需要导入的组件以全类名的方式返回；这些组件就会被添加到容器中。有了自动配置类，免去了我们手动编写配置注入功能组件等的工作；
   ~~~
 
-  两个注解，
+  Spring Boot在启动的时候从类路径下的META-INF/spring.factories中获取EnableAutoConﬁguration指定的值，将 这些值作为自动配置类导入到容器中，自动配置类就生效，帮我们进行自动配置工作；以前我们需要自己配置的东 西，自动配置类都帮我们；
 
 ### Spring的注解
 
@@ -278,15 +294,11 @@ public class Person {
     private String lastName;
 ~~~
 
-
-
-
-
 ### properties配置文件 
 
-省略，暂时。
+properties配置文件在idea中默认utf-8可能会乱码：
 
-
+![](img/boot/5.png)
 
 ## 配置文件的读取方式：
 
@@ -356,7 +368,6 @@ public class HelloController {
 通过 ${}，大括号内为配置的Key；如果配置不存在时，给一个默认值时，可以用冒号分割，后面为具体的值
 
 ~~~java
-
 @RestController
 public class HelloController {
 
@@ -537,7 +548,102 @@ public class HelloController {
 
 ![](img/boot/4.png)
 
+### 多profile
 
+~~~yml
+server:
+  port: 8081
+spring:
+  profiles:
+    active: dev
+---
+server:
+  port: 8083
+spring:
+  profiles: dev
+---
+server:
+     port: 8084
+spring:
+  profiles: prod
+~~~
+
+**激活的方式：**
+
+* 在配置文件中指定 spring.proﬁles.active=dev
+* 命令行：可以直接在测试的时候，配置传入命令行参数
+
+~~~shell
+  java -jar spring-boot-02-conﬁg-0.0.1-SNAPSHOT.jar --spring.proﬁles.active=dev；
+~~~
+
+* 虚拟机参数；
+
+~~~shell
+ -Dspring.proﬁles.active=dev 
+~~~
+
+配置文件的位置和优先级按照下面的方式进行排列。各个配置互补形成最终的配置。
+
+![](img/boot/6.png)
+
+
+
+## 日志
+
+### 日志框架
+
+一位程序员在开发一个大型的系统
+
+* `System.out.println()`将关键的数据打印在控制台，注释，放开，写在一个文件中，该程序员产生了一个写一个日志框架的想法，例如叫做xxlogging.jar，在以后的开发中都可以使用。
+* 随着时间的推移，该程序员想要给该框架添加个高大上的功能，比如说：异步模式，自动归档（将每天的日志形成一个文件，然后自动归档）xx-good-logging.jar
+* 将以前的框架卸下来之后，换上新的框架，还需要重新修改API，如果以后还有该框架的升级xx-perfect-logging.jar，每次都修改代码的话，就会显得很麻烦，
+* 该程序员想到了JDBC和数据库驱动的关系，JDBC是sun公司定义的接口，在具体的需要连接什么数据库的时候，只是需要将该厂商对JDBC的实现放进程序就行了，所以该程序员为日志框架写了一个统一的接口层：日志的抽象层，logging-abstract.jar,在具体的项目中，我们只是需要导入具体的日志实现即可。
+
+**市面上的一些日志框架：**
+
+`JUL、JCL、Jboss-logging、logback、log4j、log4j2、slf4j....`
+
+| 日志的抽象层（日志门面）                                     | 日志实现                                         |
+| ------------------------------------------------------------ | ------------------------------------------------ |
+| ~~JCL（Jakarta  Commons Logging）~~      ~~jboss-logging~~     SLF4j（Simple  Logging Facade for Java） | Log4j  JUL（java.util.logging）  Log4j2  Logback |
+
+Log4j  ，Logback，其实是同 一个人写的，最开始的时候是Log4j，只不过该日志框架有一定的性能问题，所以作者要对该日志框架进行升级，但是他觉得的对Log4j进行升级，改动太大，他就重写了一个日志框架Logback，他想到未来可能还有更多的日志框架，所以他就写了了日志框架的抽象，SLF4j。Log4j2  是Apache对日志框架的实现，该框架也非常的优秀。
+
+**左边选一个抽象层、右边来选一个实现；**
+
+| 日志抽象（日志门面） | 日志实现  |
+| -------------------- | --------- |
+| SLF4J                | Logback； |
+
+底层是Spring框架，Spring框架默认是用JCL；‘
+
+SpringBoot：和我们一样机智，选择的是上述我们说的。
+
+### SLF4j的使用
+
+以后在开发的时候，日志记录方法的使用，不应该直接调用日志的实现类，而是应该调用日志抽象层里面的方法，如果是spring boot的项目的，boot的依赖管理会有日志框架，其实就是上述表格中提到的。
+
+代码层的使用：
+
+~~~java
+public class HelloWorld {
+    public static void main(String[] args) {
+        Logger logger = LoggerFactory.getLogger(HelloWorld.class);
+        logger.info("Hello World");
+    }
+}
+~~~
+
+![](img/boot/7.png)
+
+图示：
+
+![](img/boot/8.png)
+
+其中的`adapter`叫做适配层，或者是适配器，向上实现`slf4j` 向下调用具体的日志实现，比如`log4j` ，该层主要的作用是用来适配本来不认识slf4j框架的日志实现，原因是这些框架出来的时候，slf4j还没有出现。这些适配层都是slf4j来实现的。
+
+每个日志框架都有自己的配置文件，使用了`slf4j`之后，**配置文件还是做成日志实现框架的日志文件**
 
 
 
@@ -548,8 +654,6 @@ public class HelloController {
 * 创建Spring Boot应用，选择我们需要使用的模块
 * Boot已经帮我们完成了配置，我们只是需要少量的配置就能运行起来
 * 自己编写业务代码
-
-
 
 ## view、controller、service、dao、model层级关系
 
@@ -564,12 +668,6 @@ public class HelloController {
 * service层：业务操作实现类，调用dao层接口。
 * dao层：     数据业务处理，持久化操作
 * model层： pojo，OR maping，持久层
-
-
-
-
-
-
 
 ## websocket
 
