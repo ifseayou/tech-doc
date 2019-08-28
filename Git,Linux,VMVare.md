@@ -1,6 +1,6 @@
-# Git,Linux
+# `Git`,Linux
 
-## Git
+## `Git`
 
 ### 远程仓库
 
@@ -63,6 +63,10 @@ Changes to be committed:
 ~~~shell
 git diff MySQL.md # 可以查看该文件被修改的位置
 ~~~
+
+### pull request
+
+如果我们要对开源项目提交代码的话，我们可以先`fork`一下这个项目，然后clone自己的项目到本地，然后修改这个项目，最后推到远端自己的项目下，最后在自己的项目页面发起pull request。
 
 ### 克隆
 

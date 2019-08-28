@@ -17,8 +17,81 @@
 ## Lambda表达式
 
 <https://blog.csdn.net/qq_31807385/article/details/82670505>该博文，说的还算清楚。
+![](img/java/4.png)
+
+### 使用逻辑
+
+从**I** 入口进入，是对接口的实现；从**lambda**进入，是对函数式接口的实现，**所谓函数式接口就是一个接口，只有一个抽象方法**，该接口在在作为另外一个方法（可能是构造方法，也可能是其他方法）的参数，的时候，（比如这里在做为Thread类的构造函数的参数）就可以使用**lambda**表达式来。逻辑应该是这样的：
+
+* Thread类的构造可以传入Runnable接口的实现类，
+* Runnable接口是一个函数式接口，
+* 所以Thread类的构造函数中使用Lambda表达式来实现
+
+在来看看新的例子：
+
+~~~java
+public class LearnLambda {
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>();
+        list.add("one");
+        list.add("two");
+        list.add("three");
+        list.add("four");
+        list.forEach(w -> System.out.println(w));
+    }
+}
+/*  one
+    two
+    three
+    four
+ */
+~~~
+
+这里的逻辑是：
+
+* forEach方法的的参数是**Consumer**接口
+* 该接口是一个函数式接口
+* 所以直接在forEach方法中使用Lambda表达式来实现
+
+在来一个例子：
+
+![](img/java/5.png)
+
+这里的逻辑是：
+
+* generate()方法参数是**Supplier** 接口
+* 该接口是一个函数式接口
+* 所以直接在generate()方法中直接使用Lambda表达式
+
+这里，必须要有返回值，
+
+~~~java 
+public class LearnLambda {
+    public static void main(String[] args) {
+        Random random = new Random();
+        Stream<Integer> generate = Stream.generate(
+                () ->  random.nextInt(10)
+        );
+        generate.forEach(t -> System.out.print(t + "\t"));
+    }
+}
+~~~
+
+还有一处逻辑，这里不再举例，
+
+* 某某方法的参数是**Function**接口
+* 该接口是一个函数式接口，要求有返回值，有参数
+* 所以在某某方法内可以使用lambda表达式
+
+在java.util.function包下还有很多函数式接口可供使用。也即，如果某个方法中传入的参数是`function`包下的函数式接口，那么就可以直接使用Lambda表达式。
+
+### 方法引用
+
+**当Lambda表达式满足某种条件的时候，使用方法引用，可以再次简化代码**
 
 ## Stream流
+
+> the Stream API is used to process collections of objects.
 
 `Stream API ( java.util.stream) `把真正的函数式编程风格引入到Java中。这是目前为止对Java类库最好的补充，因为Stream API可以极大提高Java程序员的生产力，让程序员写出高效率、干净、简洁的代码。
 
@@ -26,7 +99,7 @@ Stream 是 Java8 中处理集合的关键抽象概念，它可以指定你希望
 
 ### Stream是什么？
 
-是数据渠道，用于操作数据源（集合、数组等）所生成的元素序列。“集合讲的是数据，Stream流讲的是计算！”
+**是数据渠道，用于操作数据源（集合、数组等）所生成的元素序列。**“集合讲的是数据，Stream流讲的是计算！”
 
 * Stream 自己不会存储元素。
 
@@ -46,9 +119,40 @@ Stream 是 Java8 中处理集合的关键抽象概念，它可以指定你希望
 
 ![](img/java/2.png)
 
+**代码例子：**
 
+~~~java
+public class LearnStream {
+    public static void main(String[] args) {
+        List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
 
+        // demonstration of map method
+        List<Integer> queue = numbers.stream().map(x -> x * x).collect(Collectors.toList());
+        System.out.println(queue); // [1, 4, 9, 16, 25, 36]
 
+        // create a list of String
+        List<String> names = Arrays.asList("Reflection", "Collection", "Stream");
+        // demonstration of filter method
+        List<String> result = names.stream().filter(s -> s.startsWith("S")).collect(Collectors.toList());
+        System.out.println(result); // [Stream]
+
+        List<String> show = names.stream().sorted().collect(Collectors.toList());
+        System.out.println(show); // [Collection, Reflection, Stream]
+
+        // collect method returns a set
+        Set<Integer> toSet = numbers.stream().map(x -> x * x).collect(Collectors.toSet());
+        System.out.println(toSet); // [16, 1, 4, 36, 9, 25]
+
+        // demonstration of forEach method
+        numbers.stream().map(x -> x * 2).forEach(t -> System.out.print(t + "\t")); //  2	4	6	8	10	12
+
+        System.out.println();
+        // demonstration of reduce method
+        Integer reduce = numbers.stream().filter(x -> x % 2 == 0).reduce(1, (initial, b) -> initial + b);
+        System.out.println(reduce); // 13 ,第一个参数为0的时候，结果为12
+    }
+}
+~~~
 
 
 
@@ -312,6 +416,90 @@ class MyCallable03 implements Callable<Integer>{
 
 
 ## 类库
+
+### Class
+
+~~~java
+package com.isea.jvm;
+
+import java.lang.reflect.Method;
+
+/**
+ *  Instances of the class {@code Class} represent classes and
+ *  interfaces in a running Java application.  An enum is a kind of
+ *  class and an annotation is a kind of interface.
+ */
+public class LearnJVM {
+
+    public static void main(String[] args) {
+        Student student = new Student();
+        Class<? extends Student> stuClass = student.getClass();
+        System.out.println(stuClass); // class com.isea.jvm.Student
+        System.out.println(Student.class); // class com.isea.jvm.Student
+        Method[] declaredMethods = stuClass.getDeclaredMethods();
+        for (Method method : declaredMethods) {
+            System.out.println(method.getName());
+        }
+        /*
+            getName
+            setName
+            setAge
+            getAge
+         */
+        ClassLoader classLoader = Student.class.getClassLoader();
+        System.out.println(classLoader);  // sun.misc.Launcher$AppClassLoader@18b4aac2
+    }
+}
+
+class  Student{
+    private String name;
+    private int age;
+
+    public Student(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public Student() {}
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+~~~
+
+
+
+
+
+### Runnable
+
+~~~java
+/**
+ * The <code>Runnable</code> interface should be implemented by any
+ * class whose instances are intended to be executed by a thread. The
+ * class must define a method of no arguments called <code>run</code>.
+ * <p>
+ */
+~~~
+
+该接口应该被实现，被谁实现呢？被所有想要被执行的线程实现。
+
+
+
+
 
 ### Regex
 
