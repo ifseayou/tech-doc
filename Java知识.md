@@ -5,13 +5,9 @@
 本文更多的简述Java8的相关知识，因为Java 8 于2014年3月14号发布以来，可以看成是自Java 5 以来最具革命性的版本。Java 8为Java语言、编译器、类库、开发工具与JVM带来了大量新特性。
 
 * 速度更快
-
 * 代码更少(增加了新的语法：Lambda 表达式)
-
 * 强大的 Stream API
-
 * 便于并行
-
 * 最大化减少空指针异常：Optional
 
 ## Lambda表达式
@@ -294,6 +290,63 @@ public <E> method(){
 }
 ~~~
 
+## java.collection
+
+下图没有将java.util.concurrent包下的线程安全容器添加到进去，也么有列出Map容器，但是Map也是作为集合框架的一部分，再但是本身Map并不是真正的Collection。
+
+![](img/java/8.png)
+
+| List        | 有序集合，可以重复                     |
+| ----------- | -------------------------------------- |
+| Set         | 不允许重复元素                         |
+| Queue/Deque | Java提供的标准队列的实现，还支持FIFO， |
+
+| TreeSet      | 支持自然顺序访问 |
+| ------------ | ---------------- |
+| HashSet      | 没有顺序         |
+| LinkedHahSet | 保持插入的顺序   |
+
+如何实现线程不安全的集合支持并发编程的场景：`List list = Collections.synchronizedList(new ArrayList());  `该方法的实现，就是在get，set，add等基本方法前面添加了`synchronizd`关键字**Set的底层实现是**Map，具体的value的值是虚拟对象Dummy对象，PRESENT。在Java9 中，Java标准库提供了一系列的静态工厂方法，比如List.of() ， Set.of()，创建不可变的集合。
+
+| Hashtable     | 早期提供的哈希表的实现，本身是同步的，不支持null键和值，不推荐用 |
+| ------------- | ------------------------------------------------------------ |
+| HashMap       | 不是同步的，支持null键和值，   （并发编程中产生，无限占用CPUsize不准等异常） |
+| TreeMap       | 基于红黑树 的一种提供**顺序访问的Map**，它的get，put，remove等方法都是log（N）的时间复杂度，顺序由比较器（comparator）或自然顺序（comparable）来决定。 |
+| LinkedHashMap | 遍历顺序符合插入顺序（也维护了双向链表）场景：比如释放空间占用敏感的资源池中，将最不长访问的对象释放掉。如LRU。 |
+
+![](img/java/9.png)
+
+#### HashMap的源码：
+
+putVal 方法本身逻辑非常集中，从初始化、扩容到树化，全都和该方法有关
+
+ 
+
+// HashMap默认的初始大小是16
+ static final int *DEFAULT_INITIAL_CAPACITY* = 1 << 4; // aka 16
+ 
+ // 默认装载因子，当HashMap中的元素超过了0.75 * capacity的时候，扩容为原来的两倍
+ static final float *DEFAULT_LOAD_FACTOR* = 0.75f;
+ 
+ // 当链表的长度超过了8的时候，就需要treeify
+ static final int *TREEIFY_THRESHOLD* = 8
+
+ 
+
+HashMap的也是Lazy-load的模式，在首次使用的时候，才别初始化，new的时候只是被声明（特殊的构造除外）
+
+ 
+
+扩容的门限值：装载因子 * 容量 ，当达到了门限值的时候，就需要给Map扩容。
+
+ 
+
+扩容的时候，由于Map是成倍扩容的，门限值也成倍扩容的。
+
+
+
+
+
 ## java.sql.
 
 ### Connection
@@ -416,6 +469,30 @@ class MyCallable03 implements Callable<Integer>{
 
 
 ## 类库
+
+### Error和Exception
+
+相同点：都继承了Throwable类， 不同点：Error是指在正常的情况下不太可能出现的情况，一旦发生，程序就处于非正常的，不可恢复的状态。Exception 分为可检查异常，和不可检查异常（也即运行时异常），可检查异常在代码中必须进行显示的捕获和声明。而不可检查异常，并不需要。
+
+![](G:/MarkdownNotes/tech-doc/img/java/6.png)
+
+***NoClassDefFoundError  和 ClassNotFoundException的区别***
+
+类的装载分为显示和隐式两种方式， **显示装载类**：当调用下面的方法：
+
+- 类 Class 中的 forName() 方法。
+- 类 ClassLoader 中的 findSystemClass() 方法。
+- 类 ClassLoader 中的 loadClass() 方法。
+
+指定类（以类名作为参数）有类装载器装入的时候，就是显示的装载类，如果类应装入，那么会返回一个引用，如果没有，则装载器会通过委托模式来装载类。以上如果没有找到这个类，就会发生ClassNotFoundException；
+
+**隐式装载类：**发生在由于引用，实例化或继承导致装载类的时候，在这样的情况下，装入都是在幕后进行，JVM会解析必要的引用并装入类。如果引用的类在类路径中没有找到，就会发生NoClassDefFoundError。 
+
+Java的异常处理机制，会消耗一定的性能：
+
+![](G:/MarkdownNotes/tech-doc/img/java/7.png)
+
+
 
 ### Class
 
@@ -730,6 +807,18 @@ Factory and utility methods for {@link Executor}, {@link
 ~~~
 
 查考：<https://josh-persistence.iteye.com/blog/2145120>；
+
+## JVM
+
+JRE，包含了JVM，和Java类库，JDK包含了JRE 和一些工具（如编译工具，各种诊断工具）
+
+
+
+
+
+
+
+
 
 ## 使用`DecimalFormat`的方式对数字进行格式化
 

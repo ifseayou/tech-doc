@@ -2,6 +2,68 @@
 
 ## `Git`
 
+### 版本回退
+
+~~~shell
+# 我先后在gittest仓库下进行了两次提交，然后使用git log命令查看一下
+$ git log
+commit 74f261c789f1c3ad8665e3fb12f1e22b994841ee (HEAD -> master) #当前所在的版本
+Author: 谢海龙 <ifseayou@gmail.com>  # 作者
+Date:   Thu Aug 29 13:44:07 2019 +0800 # 提交的时间
+
+    add something to the reset.md  # 提交的时候comment
+
+commit b4cf0842f1ad41b2844fb0bdf6e20ffced5b1f98
+Author: 谢海龙 <ifseayou@gmail.com>
+Date:   Thu Aug 29 13:43:09 2019 +0800
+
+    initial the reset.md
+    
+# 回退到初始的版本 ，使用以下的命令
+$ git reset --hard b4cf0842f1ad41b2844fb0bdf6e20ffced5b1f98  
+HEAD is now at b4cf084 initial the reset.md
+
+# 查看当前是否回到了初始版本
+$ git log
+commit b4cf0842f1ad41b2844fb0bdf6e20ffced5b1f98 (HEAD -> master)
+Author: 谢海龙 <ifseayou@gmail.com>
+Date:   Thu Aug 29 13:43:09 2019 +0800
+
+    initial the reset.md
+
+# 再回到未来版本，先查看一下未来版本的版本id
+$ git reflog
+b4cf084 (HEAD -> master) HEAD@{0}: reset: moving to b4cf0842f1ad41b2844fb0bdf6e20ffced5b1f98
+74f261c HEAD@{1}: commit: add something to the reset.md  # 未来的版本
+b4cf084 (HEAD -> master) HEAD@{2}: commit (initial): initial the reset.md
+
+# 回到未来版本
+$ git reset --hard 74f261c
+HEAD is now at 74f261c add something to the reset.md
+
+
+~~~
+
+### 工作区和暂存区
+
+* 工作区就是你工作的目录，暂存区就是每次执行`git add **`文件存放的目标位置。
+
+* 第一次修改 -> `git add` -> 第二次修改 -> `git add` -> `git commit` ，如果没有`git add`到
+
+### 丢掉工作区的修改
+
+命令`git checkout -- readme.txt`意思就是，把`readme.txt`文件在工作区的修改全部撤销，这里有两种情况：
+
+* 一种是`readme.txt`自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
+
+* 一种是`readme.txt`已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态。
+
+~~~shell
+
+~~~
+
+
+
 ### 远程仓库
 
 `Git`是一款分布式版本控制系统，也即同一个`Git`仓库，可以分布到不同的机器上。最早，肯定只有一台机器有一个原始版本库，此后，别的机器可以“克隆”这个原始版本库，而且每台机器的版本库其实都是一样的，并没有主次之分。这里的别的机器就可以是：GitHub，这是一个非常nice的网站，可以作为你个人的远程仓库，如此一来你就能将你的代码托管到GitHub上。
