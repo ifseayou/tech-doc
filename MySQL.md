@@ -119,9 +119,35 @@ vim /etc/my.cnf
 
 
 
-
-
 ## 相关的配置
+
+### 配置任何主机使用root都能登录mysql
+
+~~~shell
+# 使用mysql数据库
+mysql>use mysql;
+
+# 展示user表的结构
+mysql>desc user;
+
+# 查询user表
+mysql>select User, Host, Password from user;
+
+#修改user表，把Host表内容修改为%
+mysql>update user set host='%' where host='localhost';
+
+# 删除root用户的其他host
+mysql>delete from user where Host='hadoop102';
+mysql>delete from user where Host='127.0.0.1';
+mysql>delete from user where Host='::1';
+
+# 刷新
+mysql>flush privileges;
+~~~
+
+
+
+
 
 ### 修改字符集
 
