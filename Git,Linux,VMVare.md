@@ -232,11 +232,63 @@ git push
 
 ## Linux
 
+### 登录式shell和非登录式shell
+
+:one:  登录式shell就是使用了xshell工具登录某台linux服务器上之后，会自动的`source /etc/profile`文件，profile的文件里面存放了环境变量。如果不source该文件，有就不能加载到该配置文件中配置的环境变量。
+
+:two: 非登录式的shell，指的使用ssh的方式登录shell，此时不会进行 `source /etc/profile`
+
+shell中的标准输出 `1>/standardOutputFile  2>starnardOutFile` 1 指的是标准的输出，2表示的是标准错误，此时就不会输出到控制台了，而是被重定向到文件中了。`1>/dev/null ` 表示输出到黑洞  `2>&1 ` 表示的是输出到1输出的位置去。
+
+### nc
+
+也就是**ncat**在大多数 Debian 发行版中，`nc` 是默认可用的，它会在安装系统的过程中自动被安装。 但是在 CentOS 7 / RHEL 7 的最小化安装中，`nc` 并不会默认被安装。 你需要用下列命令手工安装：
+
+~~~shell
+ yum install nmap-ncat -y
+~~~
+
+`-l 选项，netcat`可以进入监听模式，使我们可以在指定端口监听入站连接，比如
+
+~~~shell
+ncat -l 8080 # 如此一来，我们就能在该端口生产消息，监听该端口的就能够收到该消息
+~~~
+
+
+
+
+
 ### curl
 
-在Linux中curl是一个利用URL规则在命令行下工作的文件传输工具，可以说是一款很强大的http命令行工具
+在Linux中curl是一个利用URL规则在命令行下工作的文件传输工具，可以说是一款很强大的http命令行工具，
 
+> *curl* is a command line tool to transfer data to or from a server, using any of the supported protocols (HTTP, FTP, IMAP, POP3, SCP, SFTP, SMTP, TFTP, TELNET, LDAP or FILE).
 
+#### example
+
+:one: 返回请求 www.baidu.com：返回的内容
+
+~~~shell
+[root@M1 ~]# curl  http://www.baidu.com
+~~~
+
+~~~html
+<!DOCTYPE html>
+<!--STATUS OK--><html> <head><meta http-equiv=content-type content=text/html;charset=utf-8><meta http-equiv=X-UA-Compatible content=IE=Edge><meta content=always name=referrer><link rel=stylesheet type=text/css href=http://s1.bdstatic.com/r/www/cache/bdorz/baidu.min.css><title>百度一下，你就知道</title></head> <body link=#0000cc> <div id=wrapper> <div id=head> <div class=head_wrapper> <div class=s_form> <div class=s_form_wrapper> <div id=lg> <img hidefocus=true src=//www.baidu.com/img/bd_logo1.png width=270 height=129> </div> <form id=form name=f action=//www.baidu.com/s class=fm> <input type=hidden name=bdorz_come value=1> <input type=hidden name=ie value=utf-8> <input type=hidden name=f value=8> <input type=hidden name=rsv_bp value=1> <input type=hidden name=rsv_idx value=1> <input type=hidden name=tn value=baidu><span class="bg s_ipt_wr"><input id=kw name=wd class=s_ipt value maxlength=255 autocomplete=off autofocus></span><span class="bg s_btn_wr"><input type=submit id=su value=百度一下 class="bg s_btn"></span> </form> </div> </div> <div id=u1> <a href=http://news.baidu.com name=tj_trnews class=mnav>新闻</a> <a href=http://www.hao123.com name=tj_trhao123 class=mnav>hao123</a> <a href=http://map.baidu.com name=tj_trmap class=mnav>地图</a> <a href=http://v.baidu.com name=tj_trvideo class=mnav>视频</a> <a href=http://tieba.baidu.com name=tj_trtieba class=mnav>贴吧</a> <noscript> <a href=http://www.baidu.com/bdorz/login.gif?login&amp;tpl=mn&amp;u=http%3A%2F%2Fwww.baidu.com%2f%3fbdorz_come%3d1 name=tj_login class=lb>登录</a> </noscript> <script>document.write('<a href="http://www.baidu.com/bdorz/login.gif?login&tpl=mn&u='+ encodeURIComponent(window.location.href+ (window.location.search === "" ? "?" : "&")+ "bdorz_come=1")+ '" name="tj_login" class="lb">登录</a>');</script> <a href=//www.baidu.com/more/ name=tj_briicon class=bri style="display: block;">更多产品</a> </div> </div> </div> <div id=ftCon> <div id=ftConw> <p id=lh> <a href=http://home.baidu.com>关于百度</a> <a href=http://ir.baidu.com>About Baidu</a> </p> <p id=cp>&copy;2017&nbsp;Baidu&nbsp;<a href=http://www.baidu.com/duty/>使用百度前必读</a>&nbsp; <a href=http://jianyi.baidu.com/ class=cp-feedback>意见反馈</a>&nbsp;京ICP证030173号&nbsp; <img src=//www.baidu.com/img/gs.gif> </p> </div> </div> </div> </body> </html>
+~~~
+
+:two:上述请求的内容下载到一个文件：
+
+~~~shell
+[root@M1 ~]# curl -o baidu.html  http://www.baidu.com
+[root@M1 ~]# curl -o baidu.html  http://www.baidu.com
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  2381  100  2381    0     0    278      0  0:00:08  0:00:08 --:--:--   592
+
+[root@M1 ~]# ll
+-rw-r--r--   1 root   root        2381 9月   5 16:26 baidu.html
+~~~
 
 ### top
 

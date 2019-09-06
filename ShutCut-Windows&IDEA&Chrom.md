@@ -69,6 +69,7 @@
 ~~~shell
 ctrl+f = f4  # 对全文进行检索
 
+ctrl+h = # 查看当前的类的的父类信息
 ~~~
 
 | Ctrl + Shift + Enter | Complete statement | 代码补全后，自动在代码末尾添加分号结束符 |

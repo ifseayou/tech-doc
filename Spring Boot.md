@@ -679,10 +679,3 @@ public class HelloWorld {
 * dao层：     数据业务处理，持久化操作
 * model层： pojo，OR maping，持久层
 
-## websocket
-
-webSocket主要的应用场景离不开即时通讯与消息推送，但只要应用程序需要在浏览器和服务器之间来回发送消息，就可以使用webSocket来降低客户端流量与服务器的负载。
-
-
-
-Streaming Text Oriented Messaging Protocol 

@@ -11,6 +11,23 @@
 <!--打包的方式会影响到静态的绑定。-->
 ~~~
 
+### Maven的镜像
+
+也即`setting.xml`文件，
+
+~~~xml
+    <mirror>
+        <id>aliyunmaven</id>
+        <mirrorOf>*</mirrorOf>
+        <name>阿里云公共仓库</name>
+        <url>https://maven.aliyun.com/repository/public</url>
+    </mirror>
+<!--寻找依赖的时候，会按照镜像的配置顺序进行寻找-->
+
+~~~
+
+
+
 ### Maven项目多模块打包的问题
 
 最近公司使用springboot开发项目，使用的构建工具是maven,项目分了很多模块，并且模块之间还存在一定的依赖，比如说一个项目common是提供各项目通用的工具类，公共的类等
@@ -22,6 +39,60 @@
 注意！注意！这里有一个巨坑，我已经义无反顾的跳进去一次了，大家一定不要再往里面跳了：Common打包出来的应该是不可执行的jar包，所以不要在Common的pom中定义spring-boot-maven-plugin插件，因为这个SpringBoot插件会在Maven的package后进行二次打包，目的为了生成可执行jar包，如果C中定义了这个插件，会报错提示没有找到main函数。这时你就可以去打包front项目了，当然打包的时候可能还是不行，这里还有一个小坑，如果还是不能进行打包的话，那么就install一下root项目，也就是总目录下的pom文件对应的install操作，这样再打包front项目基本上就没有问题了，老铁，都是经验呀，希望对你们有帮助
 
 [帮助地址](<https://blog.csdn.net/lizhongfu2013/article/details/79656972>)
+
+
+
+### 依赖jar包和不带依赖的jar包
+
+~~~xml
+<!--编译打包插件-->
+<build>
+    <plugins>
+        <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>2.3.2</version>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+            </configuration>
+        </plugin>
+        <plugin>
+            <artifactId>maven-assembly-plugin </artifactId>
+            <configuration>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+                <archive>
+                    <manifest>
+                        <mainClass>com.isea.warehouse.appclient.AppMain</mainClass>
+                    </manifest>
+                </archive>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+~~~
+
+比如写flume拦截器，我们在写的时候需要引入相关的依赖，写完了之后，打包之后需要上传到flume节点所在的节点的lib目录下，此时我们打包要选择不带依赖的jar包，因为此时依赖的jar包 已经在flume的lib目录里面了。 上面的打包插件，可以打出带有依赖和不带有依赖的jar包：![](img/mav/13.png)
+
+
+
+
+
+
+
+
+
+
 
 ## Maven中的标签
 
