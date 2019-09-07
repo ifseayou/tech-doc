@@ -254,9 +254,22 @@ shell中的标准输出 `1>/standardOutputFile  2>starnardOutFile` 1 指的是�
 ncat -l 8080 # 如此一来，我们就能在该端口生产消息，监听该端口的就能够收到该消息
 ~~~
 
+### rz
 
+该工具的作用是，可以直接传送文件到server，如果没有安装rz
 
+~~~shell
+[isea@hadoop110 software]$ sudo yum install lrzsz
+~~~
 
+镜像问题：
+
+~~~:v:
+/etc/resolv.conf
+
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+~~~
 
 ### curl
 
@@ -336,6 +349,22 @@ export PATH="$PATH:/root"
 # 修改完成之后，
 source /etc/profile
 ~~~
+
+### `/etc/resolv.conf`
+
+配置文件在server重启之后，失效的问题：原因是 /etc/sysconfig/network-scripts/ifcfg-eth0 文件中没有dns配置
+在这个文件中加入:
+
+~~~shell
+DNS1=202.96.209.5　　　　　
+DNS2=202.96.209.133　
+~~~
+
+这类的设置就好了.在此要强调一点的是，直接修改/etc/resolv.conf这个文件是没用的，网络服务重启以后会根据/etc/sysconfig /network-scripts/ifcfg-eth0来重载配置，如果ifcfg-eth0没有配置DNS，那么resolv.conf会被冲掉，重 新变成空值。
+
+:a: 这里等待验证！！！  
+
+
 
 ## `VMVare`
 
