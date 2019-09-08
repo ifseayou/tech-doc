@@ -232,6 +232,117 @@ git push
 
 ## Linux
 
+### 环境变量
+
+* 修改/etc/profile文件，用来设置系统环境变量，比如$PATH，这里的环境变量是对系统内所有用户生效，使用bash命令，需要 执行  `source /etc/profile`
+* 修改 `~/.bashrc`文件：针对某一个特定的用户，环境变量的设置只对该用户自己有效，使用bash命令，只要以该用户身份运行，命令行就会读取该文件
+
+第二种方式需要将`/etc/profile`里面的环境变量追加到`~/.bashrc`目录
+
+~~~shell
+[isea@hadoop104 zkData]$ cat /etc/profile >> ~/.bashrc
+[isea@hadoop105 zkData]$ cat /etc/profile >> ~/.bashrc
+[isea@hadoop106 zkData]$ cat /etc/profile >> ~/.bashrc
+~~~
+
+修改集群时间的脚本，仅限于测试使用：
+
+~~~shell
+vim  dt.sh
+#!/bin/bash
+# 该脚本仅限用于集群的测试环境
+log_date=$1
+
+for i in hadoop104 hadoop105 hadoop106
+do
+	ssh -t $i "sudo date -s $log_date"
+done
+~~~
+
+集群查看所有的进行的脚本
+
+~~~shell
+#! /bin/bash
+
+for i in hadoop102 hadoop103 hadoop104
+do
+        echo --------- $i ----------
+        ssh $i "$*"
+done
+~~~
+
+flume的启动脚本
+
+~~~shell
+#!/bin/bash
+case $1 in
+"start"){
+    for i in hadoop104 hadoop105
+        do
+                echo " --------启动 $i 采集flume-------"
+                ssh $i "nohup /opt/module/flume-1.7.0/bin/flume-ng agent --conf-file /opt/module/flume-1.7.0/jobs/file-flume-kafka.conf --name a1 -Dflume.root.logger=INFO,LOGFILE >/dev/null 2>&1 &"
+        done
+};;
+"stop"){
+    for i in hadoop104 hadoop105
+        do
+                echo " --------停止 $i 采集flume-------"
+                ssh $i "ps -ef | grep file-flume-kafka | grep -v grep |awk '{print \$2}' | xargs kill"
+        done
+};;
+esac
+~~~
+
+写一个kafka的群起脚本
+
+~~~shell
+#! /bin/bash
+
+case $1 in
+"start"){
+        for i in hadoop104 hadoop105 hadoop106
+        do
+                echo " --------启动 $i Kafka-------"
+                # 用于KafkaManager监控
+                ssh $i "export JMX_PORT=9988 && /opt/module/kafka_2.11-0.11.0.2/bin/kafka-server-start.sh -daemon /opt/module/kafka_2.11-0.11.0.2/config/server.properties "
+        done
+};;
+"stop"){
+        for i in hadoop104 hadoop105 hadoop106
+        do
+                echo " --------停止 $i Kafka-------"
+                ssh $i "/opt/module/kafka_2.11-0.11.0.2/bin/kafka-server-stop.sh stop"
+        done
+};;
+esac
+
+# 说明：启动Kafka时要先开启JMX端口，是用于后续KafkaManager监控
+~~~
+
+写一个启动某个类的脚本
+
+~~~shell
+#!/bin/bash
+
+	for i in hadoop104 hadoop105 
+	do
+		ssh $i "java -classpath /opt/module/orgasm-log-collector-1.0-SNAPSHOT-jar-with-dependencies.jar com.isea.warehouse.appclient.AppMain $1 $2 >/opt/module/test.log &"
+	done
+
+~~~
+
+
+
+
+
+### scp
+
+改名名用于跨机器拷贝
+
+~~~shell
+sudo scp /etc/profile root@hadoop105:/etc/profile 
+~~~
+
 ### 登录式shell和非登录式shell
 
 :one:  登录式shell就是使用了xshell工具登录某台linux服务器上之后，会自动的`source /etc/profile`文件，profile的文件里面存放了环境变量。如果不source该文件，有就不能加载到该配置文件中配置的环境变量。
