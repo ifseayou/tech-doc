@@ -331,7 +331,89 @@ esac
 
 ~~~
 
+消费Kafka数据的Flume的脚本
 
+~~~shell
+#! /bin/bash
+
+case $1 in
+"start"){
+        for i in hadoop106
+        do
+                echo " --------启动 $i 消费flume-------"
+                ssh $i "nohup /opt/module/flume-1.7.0/bin/flume-ng agent --conf-file /opt/module/flume-1.7.0/jobs/kafka-flume-hdfs.conf --name a1 -Dflume.root.logger=INFO,LOGFILE >/opt/module/flume-1.7.0/log.txt   2>&1 &"
+        done
+};;
+"stop"){
+        for i in hadoop106
+        do
+                echo " --------停止 $i 消费flume-------"
+                ssh $i "ps -ef | grep kafka-flume-hdfs | grep -v grep |awk '{print \$2}' | xargs kill"
+        done
+
+};;
+esac
+~~~
+
+集群启动脚本
+
+~~~shell
+#! /bin/bash
+
+case $1 in
+"start"){
+	echo " -------- 启动 集群 -------"
+
+	echo " -------- 启动 hadoop集群 -------"
+	/opt/module/hadoop-2.7.2/sbin/start-dfs.sh 
+	ssh hadoop105 "/opt/module/hadoop-2.7.2/sbin/start-yarn.sh"
+
+	#启动 Zookeeper集群
+	zk.sh start
+
+	sleep 4s;
+
+	#启动 Flume采集集群
+	flu1.sh start
+
+	#启动 Kafka采集集群
+	kfk.sh start
+
+	sleep 6s;
+
+	#启动 Flume消费集群
+	flu2.sh start
+
+	#启动 KafkaManager
+	#km.sh start
+};;
+"stop"){
+    echo " -------- 停止 集群 -------"
+
+	#停止 KafkaManager
+	#km.sh stop
+
+    #停止 Flume消费集群
+	flu2.sh stop
+
+	#停止 Kafka采集集群
+	kfk.sh stop
+
+    sleep 8s;
+
+	#停止 Flume采集集群
+	flu1.sh stop
+
+	#停止 Zookeeper集群
+	zk.sh stop
+
+	echo " -------- 停止 hadoop集群 -------"
+	ssh hadoop105 "/opt/module/hadoop-2.7.2/sbin/stop-yarn.sh"
+	/opt/module/hadoop-2.7.2/sbin/stop-dfs.sh 
+};;
+esac
+
+~~~
 
 
 
