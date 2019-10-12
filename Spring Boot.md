@@ -67,7 +67,7 @@
 
 ## Boot的 Hello world
 
- 浏览器发送hello请求，服务器接收请求并处理，响应Hello boot 字符串。这是一个典型的web应用，如果不使用boot去实现的话，首先我们会创建一个web项目，导入spring，springmvc 相关的依赖，然后编写一堆配置文件，完成之后将整个项目打成war包，然后放入到Tomcat里运行。
+浏览器发送hello请求，服务器接收请求并处理，响应Hello boot 字符串。这是一个典型的web应用，如果不使用boot去实现的话，首先我们会创建一个web项目，导入spring，springmvc 相关的依赖，然后编写一堆配置文件，完成之后将整个项目打成war包，然后放入到Tomcat里运行。
 
 如果使拥Boot来解决这份事情的话：
 
@@ -215,6 +215,19 @@ public class Person {
     private Boolean boss;
     // .......
 }
+
+@RequestParam // 如果是Post请求：该注解可获取Post请求中非JSon格式的数据
+
+@PostMapping("/order/checkmore")
+public String checkMore(@RequestParam(value = "amount")Integer amount,                                        @RequestParam(value = "discount")float discount)
+    
+@PathVariable // 获取get请求路径中的参数
+
+@RequestMapping(value = "/dept/get/{id}", method = RequestMethod.GET)
+public Dept get(@PathVariable("id") Long id) {
+    return service.get(id);
+}
+
 ~~~
 
 以上赋值使用是YML文件中的值：

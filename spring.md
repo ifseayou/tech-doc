@@ -391,5 +391,9 @@ System.out.println(person1);
 
 
 
+## AOP
 
+
+
+![](img/spg/7.png)
 
