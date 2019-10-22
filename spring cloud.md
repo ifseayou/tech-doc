@@ -1,14 +1,10 @@
-
-
 # spring cloud
 
 Spring Cloud是一系列框架的有序集合。它利用Spring Boot的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、数据监控等，都可以用Spring Boot的开发风格做到一键启动和部署。Spring将目前各家公司开发的比较成熟、经得起实际考验的服务框架组合起来，通过Spring Boot风格进行再封装成为Spring Cloud，最终给开发者留出了一套简单易懂、易部署和易维护的分布式系统开发工具包。微服务是可以独立部署、水平扩展、独立访问（或者有独立的数据库）的服务单元，spring cloud就是这些微服务的大管家
 
-
-
 ## 微服务
 
-All In One 可以看成是eclipse中只有一个大的工程，Tmall: com.isea.service(一个包): 商品/交易/积分/订单… 然后达成一个war包部署在Tomcat中（或者是多个Tomcat）所有的项目耦合在一起，如果一个模块存在bug，将会对其他的模块产生影响，而微服务现在将（其按照业务）拆分开来，形成独立的模块。
+All In One 可以看成是eclipse中只有一个大的工程，`Tmall: com.isea.service`(一个包): 商品/交易/积分/订单… 然后达成一个war包部署在Tomcat中（或者是多个Tomcat）所有的项目耦合在一起，如果一个模块存在bug，将会对其他的模块产生影响，而微服务现在将（其按照业务）拆分开来，形成独立的模块。
 
 马丁福乐说：
 
@@ -21,7 +17,7 @@ All In One 可以看成是eclipse中只有一个大的工程，Tmall: com.isea.s
 * 服务之间使用简单的**RESTful** API通信；
 * 独立编码，独立部署、发布，可以使用不同的语言来编写服务，并使用不同的数据存储。
 
-Dubbo的通信机制是基于远程过程调用（RPC），而微服务是基于HTTP的RESTful API；一个是品牌机，一个是组装机。Dubbo的定位始终是一款RPC框架，而Spring cloud是微服务架构下的一站式解决方案。
+`Dubbo`的通信机制是基于远程过程调用（RPC），而微服务是基于HTTP的RESTful API；一个是品牌机，一个是组装机。`Dubbo`的定位始终是一款RPC框架，而Spring cloud是微服务架构下的一站式解决方案。
 
 **微服务的优点是：**
 
@@ -46,7 +42,7 @@ Eureka是Netflix开源的一款提供服务注册和发现的产品，它提供�
 
 ### Eureka 原理
 
-Spring Cloud 封装了 Netflix 公司开发的 Eureka 模块来实现服务注册和发现。Eureka 采用了 C-S 的设计架构。Eureka Server 作为服务注册功能的服务器，它是服务注册中心。而系统中的其他微服务，使用 Eureka 的客户端连接到 Eureka Server，并维持心跳连接。这样系统的维护人员就可以通过 Eureka Server 来监控系统中各个微服务是否正常运行。Spring Cloud 的一些其他模块（比如Zuul）就可以通过 Eureka Server 来发现系统中的其他微服务，并执行相关的逻辑。
+Spring Cloud 封装了 Netflix 公司开发的 Eureka 模块来实现服务注册和发现。Eureka 采用了 C-S 的设计架构。Eureka Server 作为服务注册功能的服务器，它是服务注册中心。而系统中的其他微服务，使用 Eureka 的客户端连接到 Eureka Server，并维持心跳连接。这样系统的维护人员就可以通过 Eureka Server 来监控系统中各个微服务是否正常运行。Spring Cloud 的一些其他模块（比如`Zuul`）就可以通过 Eureka Server 来发现系统中的其他微服务，并执行相关的逻辑。
 
 Eureka由两个组件组成：
 
@@ -75,139 +71,13 @@ Eureka服务器用作服务注册服务器。Eureka客户端是一个java客户�
 - 服务消费方
 - 从Eureka获取注册服务列表，从而能够消费服务
 
-### Eureka单节点例子
+[看miscroservice代码]()
 
-使用***Spring initializer*** 勾选 ***Eureka client & server***，其中的```pom.xml``` 如下：
-
-#### pom和code
-
-~~~xml
-       <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-~~~
-
-~~~java
-@SpringBootApplication
-@EnableEurekaServer
-public class SecondEruekaApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(SecondEruekaApplication.class, args);
-    }
-
-}
-~~~
-
-#### 配置
-
-~~~properties
-spring.application.name=spring-cloud-eureka
-
-server.port=8000
-
-#是否将自己注册到Eureka Server，默认为true
-eureka.client.register-with-eureka=false
- 
-#表示是否从Eureka Server获取注册信息，默认为true。
-eureka.client.fetch-registry=false
-
-# 设置与Eureka Server交互的地址，查询服务和注册服务都需要依赖这个地址。默认是http://localhost:8761/eureka ；多个地址可使用 , 分隔。
-eureka.client.serviceUrl.defaultZone=http://localhost:${server.port}/eureka/
-~~~
-
-#### 测试
-
-访问：http://localhost:8000/ 
-
-### Eureka集群例子
-
-Eureka作为服务注册中心，应该保证其高可靠性，防止单点故障，所以在生产中要配置三台或者三台以上的配置中心来保证服务的稳定性，要点是：**将每台注册中心分别指向其他两台节点的注册中心即可**
-
-配置文件：
-
-~~~yml
----
-spring:
-  application:
-    name: spring-cloud-eureka
-  profiles: peer1
-server:
-  port: 8000
-eureka:
-  instance:
-    hostname: peer1
-  client:
-    serviceUrl:
-      defaultZone: http://peer2:8001/eureka/,http://peer3:8002/eureka/
----
-spring:
-  application:
-    name: spring-cloud-eureka
-  profiles: peer2
-server:
-  port: 8001
-eureka:
-  instance:
-    hostname: peer2
-  client:
-    serviceUrl:
-      defaultZone: http://peer1:8000/eureka/,http://peer3:8002/eureka/
----
-spring:
-  application:
-    name: spring-cloud-eureka
-  profiles: peer3
-server:
-  port: 8002
-eureka:
-  instance:
-    hostname: peer3
-  client:
-    serviceUrl:
-      defaultZone: http://peer1:8000/eureka/,http://peer2:8001/eureka/
-~~~
-
-将该项目package成为jar包，然后执行下面命令：
-
-~~~bash
-java -jar second-erueka-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer1
-java -jar second-erueka-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer2
-java -jar second-erueka-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer3
-~~~
-
-### 服务注册、服务发现
-
-服务注册中心、服务提供者、服务消费者，其中服务注册中心就是我们上一篇的eureka单机版启动既可，流程是首先启动注册中心，服务提供者生产服务并注册到服务中心中，消费者从服务中心中获取服务并执行。
-
-#### 服务提供
-
-我们假设服务提供者有一个hello方法，可以根据传入的参数，提供输出“hello xxx，this is first messge”的服务
-
-
-
-
-
-
-
-
-
-## 服务网关zuul
+## 服务网关`zuul`
 
 外部的应用如何来访问内部各种各样的微服务呢？在微服务架构中，后端服务往往不直接开放给调用端，而是通过一个API网关根据请求的`url`，路由到相应的服务。当添加API网关后，在第三方调用端和服务提供方之间就创建了一面墙，这面墙直接与调用方通信进行权限控制，后将请求均衡分发给后台服务端。
 
-## 分布式配置中心`config`
+## 分布式配置中心`config` 可以使用Apollo
 
 ### describe
 
@@ -224,3 +94,70 @@ A，B，C...都是微服务，`Config Sever`自己也是一个微服务，配置
 `Spring Cloud Config` 为微服务架构中的微服务提供集中化的外部配置支持，假设DBA，修改了库，通知运维，运维要通知Java工程师修改`yml`配置文件，如果此时Java工程师在睡觉，有了配置中心之后，运维直接修改`git`上的配置，配置中心自动获取配置，`config`客户端从配置中心获取新的配置信息。Cloud推荐使用`git`来进行配置中心的集中式管理。
 
 配置发生变化的时候，服务不需要重启即可感知到相应的变化，并应用新的配置。所有的配置信息已REST接口的信息进行暴露。
+
+### `Fegin`
+
+在没有使用`Mybatis`的时候：
+`deptDao deptDaoImpl`(完成增删改查的工作)
+`deptDao deptDaoMapper.xml`（完成增删改查的工作）
+后端的返回给前端的就应该是JSON串，controller + 方法上的`responsebody`；或者是使用了整合了之后的`restcontroller`
+`RestTemplate`提供了多种便捷访问远程Http服务的方法， 是一种简单便捷的访问restful服务模板类，是Spring提供的用于访问Rest服务的客户端模板工具集。
+
+Eureka是什么
+服务注册与发现对于微服务架构来说是非常重要的，有了服务发现与注册，只需要使用服务的标识符，就可以访问到服务，而不需要修改服务调用的配置文件了。功能类似于`dubbo`的注册中心，比如Zookeeper。
+
+Spring Cloud Ribbon是基于Netflix Ribbon实现的一套客户端 负载均衡的工具。
+简单的说，Ribbon是Netflix发布的开源项目，主要功能是提供客户端的软件负载均衡算法，将Netflix的中间层服务连接在一起。Ribbon客户端组件提供一系列完善的配置项如连接超时，重试等。简单的说，就是在配置文件中列出Load Balancer（简称LB）后面所有的机器，Ribbon会自动的帮助你基于某种规则（如简单轮询，随机连接等）去连接这些机器。我们也很容易使用Ribbon实现自定义的负载均衡算法。
+高可用才是目的，负载均衡只是手段而已；
+
+之前我们实现了使用微服务的名称来获得微服务的调用地址；现在使用`Fegin`来接口+注解 来获取需要调用的服务。
+
+~~~java
+@Mapper
+public interface DeptDao{} // 通过这样的方式我们可以访问数据库
+
+@FeignClient(value = "MICROSERVICECLOUD-DEPT")
+public interface DeptClientService
+~~~
+
+
+
+今天学习微服务的小总结：
+①：`api + provider8001 + consumer80 `，客户端请求80，80使用`RestTemplates`请求8001，在controller层写上服务的地址
+
+②：erueka7001添加进来，作为`erueka`的server，修改provider8001将服务注册到`erueka`上，并构建了`erueka`集群
+
+③：ribbon负载均衡：增加provider8002，provider8003，和provider8001一样都注册到`erueka`集群中，将consumer80暴露的地址改为微服务的名称，可以发现，用户在访问的时候，请求的到不用的微服务。
+
+④：添加consumerfegin 在其controller层使用service接口，该service接口定义在api，并且是fegin接口，同样用户在访问的时候实现负载的能力。fegin 直接替代了 ribbon + restTemplate
+
+### `Hystrix`
+
+**分布式系统面临的问题**
+复杂分布式体系结构中的应用程序有数十个依赖关系，每个依赖关系在某些时候将不可避免地失败。
+
+**服务雪崩**
+多个微服务之间调用的时候，假设微服务A调用微服务B和微服务C，微服务B和微服务C又调用其它的微服务，这就是所谓的“扇出”。如果扇出的链路上某个微服务的调用响应时间过长或者不可用，对微服务A的调用就会占用越来越多的系统资源，进而引起系统崩溃，所谓的“雪崩效应”.
+
+#### 服务熔断
+
+熔断机制是应对雪崩效应的一种微服务链路保护机制。当扇出链路的某个微服务不可用或者响应时间太长时，会进行服务的降级，进而熔断该节点微服务的调用，快速返回"错误"的响应信息。当检测到该节点微服务调用响应正常后恢复调用链路。在`SpringCloud`框架里熔断机制通过`Hystrix`实现。`Hystrix`会监控微服务间调用的状况，当失败的调用到一定阈值，缺省是5秒内20次调用失败就会启动熔断机制。熔断机制的注解是`@HystrixCommand`。
+
+#### 服务降级
+
+整体资源快不够了，忍痛将某些服务先关掉，待渡过难关，再开启回来。
+
+### `Zuul`
+
+`Zuul`包含了对请求的路由和过滤两个最主要的功能：其中路由功能负责将外部请求转发到具体的微服务实例上，是实现外部访问统一入口的基础而过滤器功能则负责对请求的处理过程进行干预，是实现请求校验、服务聚合等功能的基础。
+
+`Zuul`和`Eureka`进行整合，将`Zuul`自身注册为`Eureka`服务治理下的应用，同时从Eureka中获得其他微服务的消息，也即以后的访问微服务都是通过`Zuul`跳转后获得。`Zuul`服务最终还是会注册进Eureka。
+
+
+
+
+
+
+
+
+

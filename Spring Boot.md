@@ -140,42 +140,78 @@ template: 保存所有的模板页面。
 
  ## Spring 中的一些注解
 
-### @SpringBootApplication注解
-
- 说明这个类是SpringBoot的主配置类，SpringBoot 会运行这个类的main方法来启动**SpringBoot**应用。如果进入该注解，可以发现：
+[Spring Boot 注解详细解读](<https://blog.csdn.net/weixin_40753536/article/details/81285046>) 从这篇文章里面摘抄出来比较重要的注解：
 
 ~~~java
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-@SpringBootConfiguration
-@EnableAutoConfiguration
-@ComponentScan(
-    excludeFilters = {@Filter(
-    type = FilterType.CUSTOM,
-    classes = {TypeExcludeFilter.class}
-), @Filter(
-    type = FilterType.CUSTOM,
-    classes = {AutoConfigurationExcludeFilter.class}
-)}
-)
-public @interface SpringBootApplication {
+@SpringBootApplication：// 申明让spring boot自动给程序进行必要的配置，这个配置等同于：@Configuration ，@EnableAutoConfiguration 和 @ComponentScan 三个配置。
+
+@ResponseBody：// 表示该方法的返回结果直接写入HTTP response body中，一般在异步获取数据时使用，用于构建RESTful的api。在使用@RequestMapping后，返回值通常解析为跳转路径，加上@Responsebody后返回结果不会被解析为跳转路径，而是直接写入HTTP response body中。比如异步获取json数据，加上@Responsebody后，会直接返回json数据。该注解一般会配合@RequestMapping一起使用。
+
+@Controller // 用于定义控制器类，在spring项目中由控制器负责将用户发来的URL请求转发到对应的服务接口（service层），一般这个注解在类中，通常方法需要配合注解@RequestMapping。
+
+@RestController // 用于标注控制层组件(如struts中的action)，@ResponseBody和@Controller的合集。
+
+@RequestMapping //提供路由信息，负责URL到Controller中的具体函数的映射。
+
+@EnableAutoConfiguration // SpringBoot自动配置（auto-configuration）：尝试根据你添加的jar依赖自动配置你的Spring应用。例如，如果你的classpath下存在HSQLDB，并且你没有手动配置任何数据库连接beans，那么我们将自动配置一个内存型（in-memory）数据库”。你可以将@EnableAutoConfiguration或者@SpringBootApplication注解添加到一个@Configuration类上来选择自动配置。如果发现应用了你不想要的特定自动配置类，你可以使用@EnableAutoConfiguration注解的排除属性来禁用它们。
+
+@ComponentScan // 表示将该类自动发现扫描组件。个人理解相当于，如果扫描到有@Component、@Controller、@Service等这些注解的类，并注册为Bean，可以自动收集所有的Spring组件，包括@Configuration类。我们经常使用@ComponentScan注解搜索beans，并结合@Autowired注解导入。可以自动收集所有的Spring组件，包括@Configuration类。如果没有配置的话，Spring Boot会扫描启动类所在包下以及子包下的使用了@Service,@Repository等注解的类。
+
+@Configuration // 相当于传统的xml配置文件，如果有些第三方库需要用到xml文件，建议仍然通过@Configuration类作为项目的配置主类——可以使用@ImportResource注解加载xml配置文件。用@Configuration标注的类（A类）相当于xml里的beans,A类中@Bean注解的和xml里定义的bean等价，用ConpentScan扫描之后，最终我们可以在程序里用@AutoWired或@Resource注解取得用@Bean注解的bean，和用xml先配置bean然后在程序里自动注入一样。目的是减少xml里配置。
+
+@Import // 用来导入其他配置类。
+
+@ImportResource //用来加载xml配置文件。
+
+@Service // 一般用于修饰service层的组件
+
+@Repository // 使用@Repository注解可以确保DAO或者repositories提供异常转译，这个注解修饰的DAO或者repositories类会被ComponetScan发现并配置，同时也不需要为它们提供XML配置项。
+
+@Value // 注入Spring boot application.properties配置的属性的值。示例代码：
+
+@Inject // 等价于默认的@Autowired，只是没有required属性；
+
+@Component //泛指组件，当组件不好归类的时候，我们可以使用这个注解进行标注。
+
+@Bean // 相当于XML中的,放在方法的上面，而不是类，意思是产生一个bean,并交给spring管理。
+
+@AutoWired // 自动导入依赖的bean。byType方式。把配置好的Bean拿来用，完成属性、方法的组装，它可以对类成员变量、方法及构造函数进行标注，完成自动装配的工作。当加上（required=false）时，就算找不到bean也不报错。
+
+@Resource(name=”name”,type=”type”) // 没有括号内内容的话，默认byName。与@Autowired干类似的事。
+
+
+
+// **** JPA注解 ****
+
+@Entity // @Table(name=”“)：表明这是一个实体类。一般用于jpa这两个注解一般一块使用，但是如果表名和实体类名相同的话，@Table可以省略
+
+
+// **** springMVC相关注解 ****
+
+@RequestMapping //@RequestMapping(“/path”)表示该控制器处理所有“/path”的URL请求。RequestMapping是一个用来处理请求地址映射的注解，可用于类或方法上。用于类上，表示类中的所有响应请求的方法都是以该地址作为父路径。该注解有六个属性：
+params // 指定request中必须包含某些参数值是，才让该方法处理。
+headers // 指定request中必须包含某些指定的header值，才能让该方法处理请求。
+value // 指定请求的实际地址，指定的地址可以是URI Template 模式
+method // 指定请求的method类型， GET、POST、PUT、DELETE等
+consumes //  指定处理请求的提交内容类型（Content-Type），如application/json,text/html;
+produces // 指定返回的内容类型，仅当request请求头中的(Accept)类型中包含该指定类型才返回
+
+@RequestParam //用在方法的参数前面。
+@RequestParam 
+String a =request.getParameter(“a”)。
+
+@PathVariable // 路径变量。
+public Dept get(@PathVariable("id") Long id)
+
+
+// **** 全局异常处理 **** 
+
+@ControllerAdvice // 包含@Component。可以被扫描到。统一处理异常。
+
+@ExceptionHandler（Exception.class）// 用在方法上面表示遇到这个异常就执行以下方法。
 ~~~
 
-* ***@SpringBootConfiguration***  标注在某一个类上，表名这是 一个Spring Boot的配置类，该配置类里面有 ***@Configuration*** 注解，在配置类上标记该注解，表示这相当于是一个配置文件，***@Configuration***注解下还有一个注解 ***@Component*** ，表明配置类也是容器中的一个组件。
 
-* ***EnableAutoConfiguration*** 告诉Spring Boot开启自动配置功能，在***@EnableAutoConfiguration*** 注解下还有
-
-  ~~~java
-  @AutoConfigurationPackage // 自动配置包，该注解内部有一个@Import({Registrar.class})，该注解会导入一个组件，这个组件的功能是：
-  
-  //将主配置类（@SpringBootApplication标注的类）的所在包及下面所有子包里面的所有组件扫描到Spring容器；
-   
-  @Import({AutoConfigurationImportSelector.class}) // 导入自动配置导入选择器，有了这个选择器之后，可以导入该场景下的所需要的所有组件，并完成配置。将所有需要导入的组件以全类名的方式返回；这些组件就会被添加到容器中。有了自动配置类，免去了我们手动编写配置注入功能组件等的工作；
-  ~~~
-
-  Spring Boot在启动的时候从类路径下的META-INF/spring.factories中获取EnableAutoConﬁguration指定的值，将 这些值作为自动配置类导入到容器中，自动配置类就生效，帮我们进行自动配置工作；以前我们需要自己配置的东 西，自动配置类都帮我们；
 
 ### Spring的注解
 
