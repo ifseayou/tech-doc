@@ -1,20 +1,44 @@
-# Nginx的配置文件
+# Nginx
 
-### 反向代理
+[正向代理]([https://zh.wikipedia.org/wiki/代理服务器](https://zh.wikipedia.org/wiki/%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8))：代理服务器的基本行为就是接收客户端发送的请求后转发给其他服务器。代理不改变请求[URI]，会直接发送给前方持有资源的目标服务器。
 
-Nginx能够提供反向代理，反向代理的意思是：客户端将请求打到Nginx上，Nginx再向后段服务器请求资源，然后再将资源相应给客户端，反向代理的好处有：
+[反向代理]([https://zh.wikipedia.org/wiki/反向代理](https://zh.wikipedia.org/wiki/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86)) ：客户端只会得知反向代理的IP地址，而不知道在代理服务器后面的服务器集群的存在。反向代理服务器会改变客户端请求的URI。
 
-- 对客户端隐藏服务器（集群）的IP地址
-- 安全：作为[应用层防火墙](https://zh.wikipedia.org/wiki/%E6%87%89%E7%94%A8%E5%B1%A4%E9%98%B2%E7%81%AB%E7%89%86)，为网站提供对基于Web的攻击行为（例如[DoS](https://zh.wikipedia.org/wiki/DoS)/[DDoS](https://zh.wikipedia.org/wiki/DDoS)）的防护，更容易排查[恶意软件](https://zh.wikipedia.org/wiki/%E6%83%A1%E6%84%8F%E8%BB%9F%E9%AB%94)等
-- 为后端服务器（集群）统一提供加密和[SSL](https://zh.wikipedia.org/wiki/SSL)加速（如SSL终端代理）
-- [负载均衡](https://zh.wikipedia.org/wiki/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1)，若服务器集群中有负荷较高者，反向代理通过[URL重写](https://zh.wikipedia.org/wiki/URL%E9%87%8D%E5%AF%AB)，根据连线请求从负荷较低者获取与所需相同的资源或备援
-- 对于静态内容及短时间内有大量访问请求的动态内容提供[缓存服务](https://zh.wikipedia.org/wiki/Web%E7%BC%93%E5%AD%98)
-- 对一些内容进行[压缩](https://zh.wikipedia.org/wiki/%E8%B3%87%E6%96%99%E5%A3%93%E7%B8%AE)，以节约[带宽](https://zh.wikipedia.org/wiki/%E9%A0%BB%E5%AF%AC)或为网络带宽不佳的网络提供服务
-- 减速上传
-- 为在私有网络下（如[局域网](https://zh.wikipedia.org/wiki/%E5%8D%80%E5%9F%9F%E7%B6%B2%E8%B7%AF)）的服务器集群提供[NAT穿透](https://zh.wikipedia.org/wiki/NAT%E7%A9%BF%E9%80%8F)及外网发布服务
-- 提供HTTP访问认证[[2\]](https://zh.wikipedia.org/wiki/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86#cite_note-2)
+### 负载均衡
+
+[参考链接](<https://blog.csdn.net/shadema/article/details/75949797>)
+
+负载均衡是做反向代理的目的之一。没太大区别，要说区别就是后端是1台了叫反向代理，有多台了就实现了负载均衡。
+
+![](img/ng/1.png)
+
+从图中，我们可以知道，对于浏览器来说，他会发一个$http://www.a.com/uri$请求到Nginx服务器，对于他来说，他认为数据就是从$http://www.a.com/uri$域中返回的，事实上，当$http://www.a.com/uri$到达Nginx服务器后，Nginx服务器会将其转发给$http://www.b.com/uri,$从$http://www.b.com/uri$域中取得数据并将其返回给浏览器，这个步骤浏览器是不知道的，也就是说，浏览器并不知道$http://www.b.com/uri$该域的存在，同理，$http://www.b.com/uri$所在的域（图中的Tomcat）也并不知道浏览器的存在，他也只对Nginx负责。Nginx的这么一个过程便称为反向代理。
+
+Nginx服务器是如何实现这一步的呢，事实上也很简单，只需要在location中做一下简单的配置即可，命令大概如下图所示：（配置完命令记得reload重新加载才能生效）
+
+![](img/ng/2.png)
+
+重点在于location处，这样的配置代表的是，所有来自浏览器的请求，在Nginx收到之后，都会代理到$http://192.168.1.62:8080$所在的地方。比如，我浏览器上发起$http://192.168.1.61/a/index.html$；Nginx收到之后，将会发出$http:// 192.168.1.62:8080/a/index.html$这么一个请求到所连接的服务器上，如上图的Tomcat。
+
+接下来我们做这样一个假设，假如后端连接着几台。几十台服务器呢，这个时候Nginx也是做同样的代理吗，答案是肯定的。图示如下：那么，在这么多台服务器上，Nginx的转发又是基于怎样的策略呢？这个时候就涉及在负载均衡了，说白了就是，应该怎样的分发，才能做到资源的最大限度的利用？
+
+![](img/ng/3.png)
+
+那么如何做负载均衡的策略？我们这里假设三台服务器的IP地址分别为
+
+~~~shell
+http:// 192.168.1.62:8080
+http:// 192.168.1.63:8080
+http:// 192.168.1.64:8080
+~~~
+
+负载均衡有多种实现的方式，下面仅仅介绍一种平均轮询的方式，配置如下：
+
+![](img/ng/4.png)
 
 
+
+##### 部分的配置含义
 
 ~~~conf
 worker_processes  1;  # 工作进程：数目。根据硬件调整，通常等于CPU数量或者2倍于CPU。
@@ -24,19 +48,16 @@ error_log  logs/error.log  debug;
 
 #pid        logs/nginx.pid;  # pid（进程标识符）：存放路径。
 
-
 events {
     worker_connections  1024;
 	# 每个工作进程的最大连接数量，表示Nginx服务来同时响应个转发请求。
 }
 
-
 ####设定http服务器，利用它的反向代理功能提供负载均衡支持#################
 http {
     include       mime.types; # 设定mime类型,类型由mime.type文件定义
     default_type  application/octet-stream;
-    
-    
+
 ~~~
 
 ## mime.types 文件
@@ -120,6 +141,16 @@ location /proxy/ {
 
 # 关闭
 ./nginx -s stop
+
+# Windows下批量杀死 Nginx
+taskkill /fi "imagename eq nginx.EXE" /f
+~~~
+
+#### 数据库
+
+~~~shell
+找到日志的位置：/mnt/zhbr/pyd/f1-microservice/pyd-monitor-start/logs
+ tail -f pyd-monitor.2019-10-28.0.log
 ~~~
 
 

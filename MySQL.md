@@ -295,7 +295,7 @@ where vend_id in ('1001','1002');
 
 **Union 和 order by**
 
-SELECT语句的输出用ORDER BY子句排序。在用UNION组合查询时，只 能使用一条ORDER BY子句，它必须出现在最后一条SELECT语句之后。对 于结果集，不存在用一种方式排序一部分，而又用另一种方式排序另一 部分的情况，因此不允许使用多条ORDER BY子句。。虽 然ORDER BY子句似乎只是最后一条SELECT语句的组成部分，但 实际上MySQL将用它来排序所有SELECT语句返回的所有结果。
+SELECT语句的输出用ORDER BY子句排序。在用UNION组合查询时，只 能使用一条ORDER BY子句，它必须出现在最后一条SELECT语句之后。对 于结果集，不存在用一种方式排序一部分，而又用另一种方式排序另一 部分的情况，因此不允许使用多条ORDER BY子句。虽 然ORDER BY子句似乎只是最后一条SELECT语句的组成部分，但 实际上MySQL将用它来排序所有SELECT语句返回的所有结果。
 
 ~~~shell
 select vend_id,prod_id,prod_price from products where prod_price <= 5 
