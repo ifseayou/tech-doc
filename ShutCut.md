@@ -1,5 +1,3 @@
-
-
 # Windows快捷键
 
 1. ctrl + shift + esc   任务管理器

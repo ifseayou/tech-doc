@@ -1,5 +1,11 @@
 # `Git`,Linux
 
+## SourceTree
+
+![](img/git/1.png)
+
+
+
 ## `Git`
 
 ### 版本回退
@@ -51,6 +57,17 @@ HEAD is now at 74f261c add something to the reset.md
 * 第一次修改 -> `git add` -> 第二次修改 -> `git add` -> `git commit` ，如果没有`git add`到
 
 ### 丢掉工作区的修改
+
+~~~shell
+# 对于修改的文件，也就是处于工作区，可以选择将其添加到暂存区，也可以选择丢弃修改
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+~~~
+
+
+
+
 
 命令`git checkout -- readme.txt`意思就是，把`readme.txt`文件在工作区的修改全部撤销，这里有两种情况：
 
@@ -231,6 +248,17 @@ git push
 就我个人的习惯来说，我会一直在dev上进行提交，在提交之后，回到master分支，然后在master分支合并dev分支，然后在master分支上提交到远程。
 
 ## Linux
+
+### 根据进程号查询服务所在的目录
+
+~~~shell
+[root@M1 ~]# pwdx 15453
+15453: /home/pyd/kafka_2.11-1.0.0
+~~~
+
+
+
+
 
 ### 环境变量
 
