@@ -256,10 +256,6 @@ git push
 15453: /home/pyd/kafka_2.11-1.0.0
 ~~~
 
-
-
-
-
 ### 环境变量
 
 * 修改/etc/profile文件，用来设置系统环境变量，比如$PATH，这里的环境变量是对系统内所有用户生效，使用bash命令，需要 执行  `source /etc/profile`

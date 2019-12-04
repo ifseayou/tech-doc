@@ -728,3 +728,11 @@ public class HelloWorld {
 * dao层：     数据业务处理，持久化操作
 * model层： pojo，OR maping，持久层
 
+## RESTFul风格的Demo
+
+模板引擎：![](img/boot/9.png)
+
+
+
+
+

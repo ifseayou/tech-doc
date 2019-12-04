@@ -30,7 +30,12 @@ Exception in thread "main" org.springframework.beans.factory.BeanCreationExcepti
 ~~~
 
 <hr>
+~~~java
+required string parameter 'XXX'is not present 
+// 该问题基本上是以为Spring 的参数名没有对应上，所以最好的方式就是名字叫一样的；我这里是由于打包的问题。原来是需要打包parent，也即root，root下面的包才会获的更新。
+~~~
 
+<hr>
 
 
 
