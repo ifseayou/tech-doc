@@ -1,5 +1,13 @@
 # spring框架
 
+##### 根据问题来学习
+
+说说Spring的特点：并解释；IOC是什么，DI是IOC的什么？简述下IOC创建的过程；IOC在底层是什么？交给IOC容器的Bean有几类，有什么不同？bean的作用域有哪些类型？
+
+Spring：ICO，DI，AOP以前是资源的请求，现在是资源的推送；IOC是一种思想，而DI是一种实现；IOC也即控制反转，底层的原理是反射，在创建IOC容器的时候，会读取配置获取到Bean，然后通过反射构建对象或者是实例；交给IOC容器的Bean有两类，即普通Bean和FactoryBean。
+
+
+
 Spring框架具备了如下的特点：
 
 * 轻量级：
