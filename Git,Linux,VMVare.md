@@ -1,5 +1,19 @@
 # `Git`,Linux
 
+| Q                                                   | A                                                            |
+| --------------------------------------------------- | ------------------------------------------------------------ |
+| git 中有几个区域，<br>各自的目的                    | :1st_place_medal: 工作区：修改过的内容都会进入工作区<br>:2nd_place_medal: 暂存区：git add 可以将工作区的file添加到本地仓库<br>:3rd_place_medal: 本地仓库：git commit -m '**' 会将暂存区的file提交到本地仓库<br>:four: 远程仓库：`git push origin master`(分支名称) 将本地仓库推到远程仓库 |
+| git status的作用                                    | 显示工作区，暂存区，本地仓库，远程仓库之间的文件状态；如：<br>Your branch is up to date with 'origin/master' 本地仓库和远程保持一致<br>nothing to commit, working tree clean  工作区空，不会有文件提交到暂存区<br>Your branch is ahead of 'origin/master' by 1 commit. 表示本地仓库早于远程仓库<br> 如此一来，我们可以使用`git push `将本地的提交发布到远程仓库<br>Changes not staged for commit: 处于工作区，但是没有添加到暂存区 |
+| git stash 的作用；<br />或者使用 git stash save '*' | 将工作区和暂存区的内容都藏起来，得到一个干净的（上一次提交）的工作区；<br>可以使用`git stash apply ` 回到之前藏起来的状态 |
+| git checktout --的作用                              | 可以丢弃工作区的修改                                         |
+| git commit -a 的作用                                | 将工作区的所有修改，添加到暂存区，并且提交到本地仓库         |
+|                                                     |                                                              |
+|                                                     |                                                              |
+|                                                     |                                                              |
+|                                                     |                                                              |
+
+
+
 ## SourceTree
 
 ![](img/git/1.png)
@@ -46,8 +60,6 @@ b4cf084 (HEAD -> master) HEAD@{2}: commit (initial): initial the reset.md
 # 回到未来版本
 $ git reset --hard 74f261c
 HEAD is now at 74f261c add something to the reset.md
-
-
 ~~~
 
 ### 工作区和暂存区
@@ -65,19 +77,11 @@ Changes not staged for commit:
   (use "git checkout -- <file>..." to discard changes in working directory)
 ~~~
 
-
-
-
-
 命令`git checkout -- readme.txt`意思就是，把`readme.txt`文件在工作区的修改全部撤销，这里有两种情况：
 
 * 一种是`readme.txt`自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
 
 * 一种是`readme.txt`已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态。
-
-~~~shell
-
-~~~
 
 
 
@@ -213,8 +217,8 @@ git checkout dev
 # 创建分支并切换
 git checkout -b dev
 
-# 合并某分支到当前的分支
-git merge dev
+# 合并某分支到当前的分支，比如当前在dev分支，下面的命令将master分支合并到当前dev分支
+git merge master
 
 # git push
 
@@ -241,19 +245,23 @@ git pull # 如果远程仓库有变化，会有编辑提示merge信息要填写
 git push
 ~~~
 
-
-
 ### dev和master的协同操作
 
 就我个人的习惯来说，我会一直在dev上进行提交，在提交之后，回到master分支，然后在master分支合并dev分支，然后在master分支上提交到远程。
 
 ## Linux
 
-### 根据进程号查询服务所在的目录
+##### vi模式下常用的命令
 
 ~~~shell
-[root@M1 ~]# pwdx 15453
-15453: /home/pyd/kafka_2.11-1.0.0
+shift + 4 # 定位到当前行的最后
+shift + g # 定位到最后一行
+
+:/fuck # 全文搜索fuck
+:45 # 定位到四十五行
+
+pwdx 15453 # 根据进程号查询服务所在的目录
+sudo scp /etc/profile root@hadoop105:/etc/profile  # 跨机器拷贝
 ~~~
 
 ### 环境变量
@@ -440,14 +448,6 @@ esac
 ~~~
 
 
-
-### scp
-
-改名名用于跨机器拷贝
-
-~~~shell
-sudo scp /etc/profile root@hadoop105:/etc/profile 
-~~~
 
 ### 登录式shell和非登录式shell
 

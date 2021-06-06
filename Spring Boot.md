@@ -90,7 +90,7 @@
     <version>2.1.7.RELEASE</version>
     <relativePath>../../spring-boot-dependencies</relativePath>
   </parent>
-<!--有她来真正的管理Spring boot应用的所有依赖-->
+<!--她来真正的管理Spring boot应用的所有依赖-->
 ~~~
 
 3） 编写一个主程序，来编写spring boot的应用

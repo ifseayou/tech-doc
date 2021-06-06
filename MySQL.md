@@ -1,13 +1,252 @@
 # MySQL
 
+| Q                                                         | A               |
+| --------------------------------------------------------- | --------------- |
+| Database charset  （字符集）                              | utf8            |
+| database collation（字符序）（collation本身是校对的含义） | utf8_general_ci |
+|                                                           |                 |
+|                                                           |                 |
+|                                                           |                 |
+|                                                           |                 |
+|                                                           |                 |
+|                                                           |                 |
+|                                                           |                 |
+
 > **`Sql`**上手容易，精通难
+
+### 以下内容来自MySQL必知必会
+
+distinct 应用于所有列而不仅仅是前置它的列；
+limit 1，2 检索出来的是第二、三行 等价于 limit 2 offset 1
+
+模糊匹配使用哪个关键字？**like**
+
+最大值和最小值的获取方法：使用max 和 min函数，order by 配合使用 limit
+正则表达式：这一点上机实操练习。
+
+```sql
+-- 所有prod_name中包含有1000的
+mysql> select prod_name from products where prod_name regexp '1000';
++--------------+
+| prod_name    |
++--------------+
+| JetPack 1000 |
++--------------+
+1 row in set (0.00 sec)
+
+-- 正则表达式中 . 的作用：匹配任意一个字符
+mysql> select prod_name from products where prod_name like '%000';
++--------------+
+| prod_name    |
++--------------+
+| JetPack 1000 |
+| JetPack 2000 |
++--------------+
+2 rows in set (0.00 sec)
+
+mysql> select prod_name from products where prod_name like '_000';
+Empty set (0.01 sec)
+
+mysql> select prod_name from products where prod_name regexp '.000';
++--------------+
+| prod_name    |
++--------------+
+| JetPack 1000 |
+| JetPack 2000 |
++--------------+
+2 rows in set (0.00 sec)
+
+-- 下面展示like和regexp的区别：
+mysql> select prod_name from products where prod_name like '1000';
+Empty set (0.00 sec)
+
+mysql> select prod_name from products where prod_name regexp '1000';
++--------------+
+| prod_name    |
++--------------+
+| JetPack 1000 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> select prod_name from products where prod_name like '%1000';
++--------------+
+| prod_name    |
++--------------+
+| JetPack 1000 |
++--------------+
+1 row in set (0.00 sec)
+
+--LIKE匹配整个列。如果被匹配的文本在列值 中出现，LIKE将不会找到它，相应的行也不被返回（除非使用 通配符）。而REGEXP在列值内进行匹配，如果被匹配的文本在 列值中出现，REGEXP将会找到它，相应的行将被返回。这是一 个非常重要的差别。
+
+-- | 的作用
+mysql> select prod_name from products where prod_name regexp '1000|2000';
++--------------+
+| prod_name    |
++--------------+
+| JetPack 1000 |
+| JetPack 2000 |
++--------------+
+2 rows in set (0.00 sec)
+
+
+--[]  用来匹配[]中的字符之一：
+mysql> select prod_name from products where prod_name regexp '[123] ton';
++-------------+
+| prod_name   |
++-------------+
+| 1 ton anvil |
+| 2 ton anvil |
++-------------+
+2 rows in set (0.00 sec)
+
+mysql> select prod_name from products where prod_name regexp '[1|2|3] ton';
++-------------+
+| prod_name   |
++-------------+
+| 1 ton anvil |
+| 2 ton anvil |
++-------------+
+2 rows in set (0.00 sec)
+
+mysql> select prod_name from products where prod_name regexp '[1-3] ton';
++-------------+
+| prod_name   |
++-------------+
+| 1 ton anvil |
+| 2 ton anvil |
++-------------+
+2 rows in set (0.00 sec)
+
+mysql> select prod_name from products where prod_name regexp '1|2|3 ton';
++---------------+
+| prod_name     |
++---------------+
+| 1 ton anvil   |
+| 2 ton anvil   |
+| JetPack 1000  |
+| JetPack 2000  |
+| TNT (1 stick) |
++---------------+
+5 rows in set (0.00 sec)
+```
+
+以上都是匹配单词出现，下面是正则表达式的**重复元字符**：
+
+![](img\msq\7.jpg)
+
+```sql
+-- \\匹配特殊字符
+mysql> select prod_name from products where prod_name regexp '\\([1-9] sticks?\\)';
++----------------+
+| prod_name      |
++----------------+
+| TNT (1 stick)  |
+| TNT (5 sticks) |
++----------------+
+2 rows in set (0.00 sec)
+
+--匹配连续出现在一起四次的
+mysql> select prod_name from products where prod_name regexp '[0-9]{4}';
++--------------+
+| prod_name    |
++--------------+
+| JetPack 1000 |
+| JetPack 2000 |
++--------------+
+2 rows in set (0.00 sec)
+```
+
+![](img\msq\8.png)
+
+```sql 
+--以一个数（包括以小数点开始的数）开始的所 有产品
+mysql> select prod_name from products where prod_name regexp '^[0-9\\.]';
++--------------+
+| prod_name    |
++--------------+
+| .5 ton anvil |
+| 1 ton anvil  |
+| 2 ton anvil  |
++--------------+
+3 rows in set (0.00 sec)	
+```
+
+[^123] 表示匹配除了1，2，3以外的东西。
+
+```sql 
+-- 测试正则表达式
+mysql> select 'hello' regexp '[1-2]';
++------------------------+
+| 'hello' regexp '[1-2]' |
++------------------------+
+|                      0 |
++------------------------+
+1 row in set (0.00 sec)
+
+mysql> select 'hello' regexp '^h';
++---------------------+
+| 'hello' regexp '^h' |
++---------------------+
+|                   1 |
++---------------------+
+1 row in set (0.00 sec)
+```
+
+为新产生的列起了一个新的名字，也叫做导出列。
+
+count(*) 和 count(column) 的区别在于
+
+* 使用COUNT(*)对表中行的数目进行计数，不管表列中包含的是空 值（NULL）还是非空值。 
+
+* 使用COUNT(column)对特定列中具有值的行进行计数，忽略 NULL值
+
+##### 相关子查询
+
+```sql 
+-- 显示customers 表中每个客户的订单总数
+mysql> select cust_id,cust_name,(select count(*) from orders o where o.cust_id = c.cust_id) amount from customers c;
++---------+----------------+--------+
+| cust_id | cust_name      | amount |
++---------+----------------+--------+
+|   10001 | Coyote Inc.    |      2 |
+|   10002 | Mouse House    |      0 |
+|   10003 | Wascals        |      1 |
+|   10004 | Yosemite Place |      1 |
+|   10005 | E Fudd         |      1 |
++---------+----------------+--------+
+5 rows in set (0.07 sec)
+
+mysql> select c.cust_id ,count(o.cust_id) from customers c left join orders o on c.cust_id = o.cust_id group by c.cust_id;
++---------+------------------+
+| cust_id | count(o.cust_id) |
++---------+------------------+
+|   10001 |                2 |
+|   10002 |                0 |
+|   10003 |                1 |
+|   10004 |                1 |
+|   10005 |                1 |
++---------+------------------+
+5 rows in set (0.00 sec)
+
+```
+
+#### 组合查询
+
+* 在单个查询中从不同的表返回类似结构的数据； 
+*  对单个表执行多个查询，按单个查询返回数据。 
+
+`union ` 和 `union all` 的区别之处在于，前者是能够去重，后者包含所有的数据。
+
+#### 全文本搜索
+
+两个最常使用的引擎为`MyISAM`和`InnoDB`， 前者支持全文本搜索，而后者不支持
 
 ## 范式理论
 
 完全函数依赖：通过AB能够得出C，单独A或B得不出C，那么C完全依赖于AB；部分函数依赖：通过AB推出C，A或B其中一个就能得出C，那么C部分依赖于AB；传递函数依赖：通过A得到B，B得到C，但是C得不到A，C传递依赖于A。第二范式：不存在部分函数依赖，也即不存在A推出C， B 也可以推出C的情况；第三范式：不存在，传递函数依赖。
 **OLAP：联机分析处理；OLTP：联机事务处理**
 
-**雪花模型**：接近于3NF，事实表周围有一层维度表；**星型模型**：事实表周围就一层维度表；只要有多个事实表，就是**星座模型**
+**雪花模型**：接近于3NF，事实表周围有多层维度表；**星型模型**：事实表周围就一层维度表；只要有多个事实表，就是**星座模型**
 
 ## 安装
 
@@ -182,10 +421,13 @@ mysql> show variables like '%char%';
 9 rows in set (0.01 sec)
 ```
 
-所以要修改字符集，我们推出MySQL客户端，去修改配置文件 `/etc/my.cnf` ，MySQL5.7版本只需要在配置文件`[mysqld]`中添加：
+所以要修改字符集，我们退出MySQL客户端，去修改配置文件 `/usr/my.cnf` ，MySQL5.7版本只需要在配置文件`[mysqld]`中添加：
 
 ```shell
+[mysqld]
 character_set_server=utf8
+[client]
+default-character-set=utf8
 ```
 
 添加之后，重启MySQL服务然后登陆，重新创建新的数据库**这里原来创建的数据库，依然不能支持中文**，可以发现添加中文数据：
@@ -285,11 +527,11 @@ where vend_id in ('1001','1002');
 # 返回8行结果
 ~~~
 
-所以发现，对于单个表的操作，如果使用**union**的话显的优点不划算。**union** 在应对多个表查询组合结果的时候显的更有优势。
+所以发现，对于单个表的操作，如果使用**union**的话显的有点不划算。**union** 在应对多个表查询组合结果的时候显的更有优势。
 
 #### 使用Union的规则
 
-* union 中的每个查询都必须包含相同的列，表达式，或者是聚集函数（不过各个列不需要以相同的次序列出）
+* union 中的**每个查询都必须包含相同的列，表达式，或者是聚集函数**（不过各个列不需要以相同的次序列出）
 * 列数据类型必须兼容，类型不必完全相同，但必须是DBMS可以隐式转换的类型（如不同的数值类型和日期）
 * union自动去重，如果不去重的话，使用**union all**
 
@@ -311,10 +553,6 @@ select vend_id,prod_id,prod_price from products where vend_id in ('1001','1002')
 1003	SLING	4.49
 1003	TNT1	2.5
 ~~~
-
-
-
-
 
 ## 优化分析
 
@@ -362,7 +600,11 @@ order by
 limit
 ~~~
 
+
+
 ### SQL Join
+
+[link](<https://justcode.ikeepstudying.com/2016/08/mysql-%E5%9B%BE%E8%A7%A3-inner-join%E3%80%81left-join%E3%80%81right-join%E3%80%81full-outer-join%E3%80%81union%E3%80%81union-all%E7%9A%84%E5%8C%BA%E5%88%AB/>)
 
 ~~~shell
 # 内连接 （只是连接非空的行）
@@ -391,7 +633,6 @@ select * from A right join B on A.a = B.b;
 select * from A left join B on A.a = B.b where B.b is null;
 union
 selelct * from A right join B on A.a = B.b where A.a is null;
-
 ~~~
 
 
@@ -620,7 +861,7 @@ id	select_type		table		type	possible_key	key
   --解释：索引会影响查找和排序，这里的t1的索引是按照col1，col2，col3建立的，但是第一个查询出现了断层，MySQL只能按照col3进行排序，而第二个查询刚好衔接上了，所以能够直接按照索引来进行排序
   ~~~
 
-* **Using temporary** 使用临时表保存中间结果，MySQL对查询结果排序时使用临时表，常见的order by 和group by。也就是说如果你经常使用order by和 group by的话，会拖慢MySQL的执行速度。
+* **Using temporary** 使用临时表保存中间结果，MySQL对查询结果排序时使用临时表，常见的order by 和group by。也就是说如果你**经常使用order by和 group by的话，会拖慢MySQL的执行速度。**
 
   ~~~SQL
   -- 下表在col1和col2上建立索引

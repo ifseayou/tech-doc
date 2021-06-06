@@ -1,5 +1,7 @@
 # 在Maven
 
+[关于Jar 包冲突的解决](<https://blog.csdn.net/noaman_wgs/article/details/81137893>)
+
 ## 关于Maven的Q
 
 ### Packaging
@@ -14,11 +16,9 @@
 
 | 打包方式 | 作用                                                         |
 | -------- | ------------------------------------------------------------ |
-| pom      | 打出来可以作为其他项目的maven依赖，在工程A中添加工程B的pom，<br>A就可以使用B中的类。用在父级工程或聚合工程中。用来做jar包的版本控制。 |
-| jar      | 通常是开发时要引用通用类，打成jar包便于存放管理。当你使用某些功能时就需要这些jar包的支持，需要导入jar包。 |
+| pom      | 打出来可以作为其他项目的maven依赖，在工程A中添加工程B的pom，<br>A就可以使用B中的类。**用在父级工程或聚合工程中。用来做jar包的版本控制。** |
+| jar      | 通常是开发时要引用通用类，打成jar包便于存放管理。**当你使用某些功能时就需要这些jar包的支持，需要导入jar包**。默认的打包方式。 |
 | war      | 是做好一个web网站后，打成war包部署到服务器。目的是节省资源，提供效率。 |
-
-
 
 ~~~xml
 <packaging>jar</packaging>
@@ -39,10 +39,7 @@
         <url>https://maven.aliyun.com/repository/public</url>
     </mirror>
 <!--寻找依赖的时候，会按照镜像的配置顺序进行寻找-->
-
 ~~~
-
-
 
 ### Maven项目多模块打包的问题
 
@@ -55,8 +52,6 @@
 注意！注意！这里有一个巨坑，我已经义无反顾的跳进去一次了，大家一定不要再往里面跳了：Common打包出来的应该是不可执行的jar包，所以不要在Common的pom中定义spring-boot-maven-plugin插件，因为这个SpringBoot插件会在Maven的package后进行二次打包，目的为了生成可执行jar包，如果C中定义了这个插件，会报错提示没有找到main函数。这时你就可以去打包front项目了，当然打包的时候可能还是不行，这里还有一个小坑，如果还是不能进行打包的话，那么就install一下root项目，也就是总目录下的pom文件对应的install操作，这样再打包front项目基本上就没有问题了，老铁，都是经验呀，希望对你们有帮助
 
 [帮助地址](<https://blog.csdn.net/lizhongfu2013/article/details/79656972>)
-
-
 
 ### 依赖jar包和不带依赖的jar包
 
@@ -99,16 +94,6 @@
 ~~~
 
 比如写flume拦截器，我们在写的时候需要引入相关的依赖，写完了之后，打包之后需要上传到flume节点所在的节点的lib目录下，此时我们打包要选择不带依赖的jar包，因为此时依赖的jar包 已经在flume的lib目录里面了。 上面的打包插件，可以打出带有依赖和不带有依赖的jar包：![](img/mav/13.png)
-
-
-
-
-
-
-
-
-
-
 
 ## Maven中的标签
 
@@ -155,8 +140,6 @@
 ~~~
 
 这里我们在pom文件中定义了数据库的相关配置，同时定义了一个profile，其id为product，同时在这个profile中也定义了数据库的相关配置。这样我们使用**mvn package**命令时就可以使用默认的jdbc设置，当我们使用**mvn package -P product**时maven就会自动使用id为product的profile中的数据库配置，这个是maven读取属性配置文件的覆盖。
-
-
 
 ## Maven的安装
 
